@@ -12,10 +12,11 @@ import {
 	BeforeInsert,
 } from "typeorm";
 import { Payment } from "./Payment";
-import { Rank } from "./Rank";
 import { StoryChapterPlayed } from "./StoryChapterPlayed";
 import { StoryPlayed } from "./StoryPlayed";
+import { Subscription } from "./Subscription";
 import { UserAchievement } from "./UserAchievement";
+import { UserActivityToday } from "./UserActivityToday";
 import { UserPerformance } from "./UserPerformance";
 
 @Entity()
@@ -34,6 +35,9 @@ export class User extends BaseEntity {
 
 	@Column("int", { nullable: true })
 	code: number;
+
+	@Column("int", { nullable: true })
+	rankId: number;
 
 	@Column({ nullable: true })
 	pushNotificationToken: string;
@@ -64,14 +68,20 @@ export class User extends BaseEntity {
 
 	// RELATIONS
 
-	@OneToOne(() => Rank, (rank: Rank) => rank.user)
-	rank: Rank;
-
 	@OneToOne(
 		() => UserPerformance,
 		(userPerformance: UserPerformance) => userPerformance.user
 	)
 	performanceStats: UserPerformance;
+
+	@OneToOne(
+		() => UserActivityToday,
+		(activity: UserActivityToday) => activity.user
+	)
+	activityToday: UserActivityToday;
+
+	@OneToOne(() => Subscription, (sub: Subscription) => sub.user)
+	subscription: Subscription;
 
 	@OneToMany((type) => StoryPlayed, (storyPlayed) => storyPlayed.user)
 	storiesPlayed: StoryPlayed[];
@@ -115,6 +125,8 @@ export class User extends BaseEntity {
 				isAdmin: this.isAdmin,
 				isRegistered: this.isRegistered,
 				username: this.username,
+				joinDate: this.createdAt,
+				rankId: this.rankId,
 			},
 			process.env.TOKEN_SECRET!
 		);
@@ -127,6 +139,7 @@ export class User extends BaseEntity {
 				id: this.id,
 				email: this.email,
 				isReactivated: this.isReactivated,
+				reactivationDate: this.updatedAt,
 			},
 			process.env.RESET_TOKEN_SECRET!
 		);

@@ -8,7 +8,6 @@ import {
 	UpdateDateColumn,
 	BaseEntity,
 } from "typeorm";
-import { Rank } from "./Rank";
 import { User } from "./User";
 
 @Entity()
@@ -17,13 +16,16 @@ export class UserPerformance extends BaseEntity {
 	id: string;
 
 	@Column()
-	totalDanceSteps: number;
+	totalBodyMoves: number;
 
 	@Column()
-	totalTimeSpent: number;
+	totalCaloriesBurned: number;
 
 	@Column()
-	storiesCompleted: number;
+	totalHoursDanced: number;
+
+	@Column()
+	totalDaysActive: number;
 
 	@CreateDateColumn()
 	createdAt: string;

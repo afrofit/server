@@ -5,6 +5,7 @@ export interface ReactivatedUserPayload {
 	id: string;
 	email: string;
 	isReactivated: boolean;
+	reactivationDate: string;
 }
 
 declare global {

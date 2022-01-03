@@ -20,16 +20,8 @@ __decorate([
 ], Rank.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Rank.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], Rank.prototype, "score", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Rank.prototype, "maxScore", void 0);
+], Rank.prototype, "rankCode", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.rank),
     (0, typeorm_1.JoinColumn)(),

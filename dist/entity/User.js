@@ -26,10 +26,11 @@ const argon2_1 = __importDefault(require("argon2"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const typeorm_1 = require("typeorm");
 const Payment_1 = require("./Payment");
-const Rank_1 = require("./Rank");
 const StoryChapterPlayed_1 = require("./StoryChapterPlayed");
 const StoryPlayed_1 = require("./StoryPlayed");
+const Subscription_1 = require("./Subscription");
 const UserAchievement_1 = require("./UserAchievement");
+const UserActivityToday_1 = require("./UserActivityToday");
 const UserPerformance_1 = require("./UserPerformance");
 let User = class User extends typeorm_1.BaseEntity {
     // FUNCTIONS
@@ -49,6 +50,8 @@ let User = class User extends typeorm_1.BaseEntity {
             isAdmin: this.isAdmin,
             isRegistered: this.isRegistered,
             username: this.username,
+            joinDate: this.createdAt,
+            rankId: this.rankId,
         }, process.env.TOKEN_SECRET);
         return token;
     }
@@ -57,6 +60,7 @@ let User = class User extends typeorm_1.BaseEntity {
             id: this.id,
             email: this.email,
             isReactivated: this.isReactivated,
+            reactivationDate: this.updatedAt,
         }, process.env.RESET_TOKEN_SECRET);
         return resetToken;
     }
@@ -89,6 +93,10 @@ __decorate([
     (0, typeorm_1.Column)("int", { nullable: true }),
     __metadata("design:type", Number)
 ], User.prototype, "code", void 0);
+__decorate([
+    (0, typeorm_1.Column)("int", { nullable: true }),
+    __metadata("design:type", Number)
+], User.prototype, "rankId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
@@ -126,13 +134,17 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => Rank_1.Rank, (rank) => rank.user),
-    __metadata("design:type", Rank_1.Rank)
-], User.prototype, "rank", void 0);
-__decorate([
     (0, typeorm_1.OneToOne)(() => UserPerformance_1.UserPerformance, (userPerformance) => userPerformance.user),
     __metadata("design:type", UserPerformance_1.UserPerformance)
 ], User.prototype, "performanceStats", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => UserActivityToday_1.UserActivityToday, (activity) => activity.user),
+    __metadata("design:type", UserActivityToday_1.UserActivityToday)
+], User.prototype, "activityToday", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => Subscription_1.Subscription, (sub) => sub.user),
+    __metadata("design:type", Subscription_1.Subscription)
+], User.prototype, "subscription", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)((type) => StoryPlayed_1.StoryPlayed, (storyPlayed) => storyPlayed.user),
     __metadata("design:type", Array)

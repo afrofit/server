@@ -1,7 +1,14 @@
 import argon2 from "argon2";
 import express, { Request, Response } from "express";
 import _ from "lodash";
+import {
+	Subscription,
+	SubscriptionDuration,
+	SubscriptionName,
+} from "../../entity/Subscription";
 import { User } from "../../entity/User";
+import { UserActivityToday } from "../../entity/UserActivityToday";
+import { UserPerformance } from "../../entity/UserPerformance";
 import { generateCode } from "../../util/generate-code";
 import { validateCreateAccount } from "../../util/validate-responses";
 
@@ -31,7 +38,32 @@ router.post(
 				isPremium: false,
 				isRegistered: true,
 				code: verificationCode,
+				rankId: 1,
 			}).save();
+
+			const subscription = await Subscription.create({
+				name: SubscriptionName.TRIAL,
+				durationInDays: SubscriptionDuration.TRIAL,
+				amountinGBP: 0,
+				user: user,
+			}).save();
+
+			const performance = await UserPerformance.create({
+				totalBodyMoves: 0,
+				totalDaysActive: 0,
+				totalHoursDanced: 0,
+				totalCaloriesBurned: 0,
+				user,
+			}).save();
+
+			const activity = await UserActivityToday.create({
+				caloriesBurned: 0,
+				bodyMoves: 0,
+				user,
+			}).save();
+
+			if (!subscription || !performance || !activity)
+				console.error("Could not create a subscription!");
 
 			console.log("Create Account Code: ", user.code);
 

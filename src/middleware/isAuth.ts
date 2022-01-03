@@ -10,6 +10,8 @@ export interface UserPayload {
 	isRegistered: boolean;
 	isAdmin: boolean;
 	username: string;
+	joinDate: string;
+	rankId: string;
 }
 
 declare global {

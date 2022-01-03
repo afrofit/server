@@ -11,26 +11,23 @@ import {
 import { User } from "./User";
 
 @Entity()
-export class Rank extends BaseEntity {
-	@PrimaryGeneratedColumn()
-	id: number;
+export class UserActivityToday extends BaseEntity {
+	@PrimaryGeneratedColumn("uuid")
+	id: string;
 
 	@Column()
-	name: string;
+	caloriesBurned: number;
 
 	@Column()
-	score: number;
-
-	@Column()
-	maxScore: number;
-
-	@OneToOne((type) => User, (user) => user.rank)
-	@JoinColumn()
-	user: User;
+	bodyMoves: number;
 
 	@CreateDateColumn()
 	createdAt: string;
 
 	@UpdateDateColumn()
 	updatedAt: string;
+
+	@OneToOne((type) => User, (user) => user.activityToday)
+	@JoinColumn()
+	user: User;
 }
