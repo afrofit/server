@@ -142,10 +142,6 @@ __decorate([
     __metadata("design:type", UserActivityToday_1.UserActivityToday)
 ], User.prototype, "activityToday", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => Subscription_1.Subscription, (sub) => sub.user),
-    __metadata("design:type", Subscription_1.Subscription)
-], User.prototype, "subscription", void 0);
-__decorate([
     (0, typeorm_1.OneToMany)((type) => StoryPlayed_1.StoryPlayed, (storyPlayed) => storyPlayed.user),
     __metadata("design:type", Array)
 ], User.prototype, "storiesPlayed", void 0);
@@ -157,6 +153,10 @@ __decorate([
     (0, typeorm_1.OneToMany)((type) => Payment_1.Payment, (payment) => payment.user),
     __metadata("design:type", Array)
 ], User.prototype, "payments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => Subscription_1.Subscription, (sub) => sub.user),
+    __metadata("design:type", Array)
+], User.prototype, "subscriptions", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)((type) => UserAchievement_1.UserAchievement, (userAchievement) => userAchievement.user),
     __metadata("design:type", Array)

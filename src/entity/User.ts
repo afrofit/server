@@ -80,8 +80,8 @@ export class User extends BaseEntity {
 	)
 	activityToday: UserActivityToday;
 
-	@OneToOne(() => Subscription, (sub: Subscription) => sub.user)
-	subscription: Subscription;
+	// @OneToOne(() => Subscription, (sub: Subscription) => sub.user)
+	// subscription: Subscription;
 
 	@OneToMany((type) => StoryPlayed, (storyPlayed) => storyPlayed.user)
 	storiesPlayed: StoryPlayed[];
@@ -92,8 +92,11 @@ export class User extends BaseEntity {
 	)
 	storyChaptersPlayed: StoryChapterPlayed[];
 
-	@OneToMany((type) => Payment, (payment) => payment.user)
+	@OneToMany((type) => Payment, (payment: Payment) => payment.user)
 	payments: Payment[];
+
+	@OneToMany(() => Subscription, (sub: Subscription) => sub.user)
+	subscriptions: Subscription[];
 
 	@OneToMany(
 		(type) => UserAchievement,

@@ -15,10 +15,11 @@ const Payment_1 = require("./Payment");
 const User_1 = require("./User");
 var SubscriptionName;
 (function (SubscriptionName) {
-    SubscriptionName["TRIAL"] = "7-Day Trial";
-    SubscriptionName["MONTH"] = "Monthly";
-    SubscriptionName["HALF_YEAR"] = "Half-Yearly";
-    SubscriptionName["YEAR"] = "Yearly";
+    SubscriptionName["TRIAL"] = "trial";
+    SubscriptionName["MONTH"] = "monthly";
+    SubscriptionName["HALF_YEAR"] = "half-yearly";
+    SubscriptionName["YEAR"] = "yearly";
+    SubscriptionName["UNSUBSCRIBED"] = "unsubscribed";
 })(SubscriptionName = exports.SubscriptionName || (exports.SubscriptionName = {}));
 var SubscriptionDuration;
 (function (SubscriptionDuration) {
@@ -30,8 +31,8 @@ var SubscriptionDuration;
 let Subscription = class Subscription extends typeorm_1.BaseEntity {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    __metadata("design:type", String)
 ], Subscription.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
@@ -50,9 +51,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Subscription.prototype, "durationInDays", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Subscription.prototype, "amountinGBP", void 0);
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Subscription.prototype, "isExpired", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
@@ -62,12 +63,12 @@ __decorate([
     __metadata("design:type", String)
 ], Subscription.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => Payment_1.Payment, (payment) => payment.subscription),
-    __metadata("design:type", Array)
-], Subscription.prototype, "payments", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.performanceStats),
+    (0, typeorm_1.OneToOne)((type) => Payment_1.Payment, (payment) => payment.subscription),
     (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", Payment_1.Payment)
+], Subscription.prototype, "payment", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)((type) => User_1.User, (user) => user.subscriptions),
     __metadata("design:type", User_1.User)
 ], Subscription.prototype, "user", void 0);
 Subscription = __decorate([

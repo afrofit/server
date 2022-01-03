@@ -16,13 +16,13 @@ const User_1 = require("./User");
 let Payment = class Payment extends typeorm_1.BaseEntity {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    __metadata("design:type", String)
 ], Payment.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Payment.prototype, "name", void 0);
+    __metadata("design:type", Number)
+], Payment.prototype, "amountInGBP", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
@@ -36,7 +36,7 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Payment.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => Subscription_1.Subscription, (sub) => sub.payments),
+    (0, typeorm_1.OneToOne)((type) => Subscription_1.Subscription, (sub) => sub.payment),
     __metadata("design:type", Subscription_1.Subscription)
 ], Payment.prototype, "subscription", void 0);
 Payment = __decorate([

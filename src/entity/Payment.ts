@@ -14,11 +14,11 @@ import { User } from "./User";
 
 @Entity()
 export class Payment extends BaseEntity {
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn("uuid")
+	id: string;
 
 	@Column()
-	name: string;
+	amountInGBP: number;
 
 	@CreateDateColumn()
 	createdAt: string;
@@ -29,6 +29,6 @@ export class Payment extends BaseEntity {
 	@ManyToOne((type) => User, (user) => user.payments)
 	user: User;
 
-	@ManyToOne((type) => Subscription, (sub) => sub.payments)
+	@OneToOne((type) => Subscription, (sub) => sub.payment)
 	subscription: Subscription;
 }

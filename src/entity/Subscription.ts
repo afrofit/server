@@ -8,15 +8,17 @@ import {
 	BaseEntity,
 	JoinColumn,
 	OneToOne,
+	ManyToOne,
 } from "typeorm";
 import { Payment } from "./Payment";
 import { User } from "./User";
 
 export enum SubscriptionName {
-	TRIAL = "7-Day Trial",
-	MONTH = "Monthly",
-	HALF_YEAR = "Half-Yearly",
-	YEAR = "Yearly",
+	TRIAL = "trial",
+	MONTH = "monthly",
+	HALF_YEAR = "half-yearly",
+	YEAR = "yearly",
+	UNSUBSCRIBED = "unsubscribed",
 }
 
 export enum SubscriptionDuration {
@@ -28,8 +30,8 @@ export enum SubscriptionDuration {
 
 @Entity()
 export class Subscription extends BaseEntity {
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn("uuid")
+	id: string;
 
 	// Could be one of "7-Day Trial", "Month", Half-Year, Year
 	@Column({
@@ -47,8 +49,8 @@ export class Subscription extends BaseEntity {
 	})
 	durationInDays: number;
 
-	@Column()
-	amountinGBP: number;
+	@Column({ default: false })
+	isExpired: boolean;
 
 	@CreateDateColumn()
 	createdAt: string;
@@ -56,10 +58,10 @@ export class Subscription extends BaseEntity {
 	@UpdateDateColumn()
 	updatedAt: string;
 
-	@OneToMany((type) => Payment, (payment) => payment.subscription)
-	payments: Payment[];
-
-	@OneToOne((type) => User, (user) => user.performanceStats)
+	@OneToOne((type) => Payment, (payment) => payment.subscription)
 	@JoinColumn()
+	payment: Payment;
+
+	@ManyToOne((type) => User, (user) => user.subscriptions)
 	user: User;
 }
