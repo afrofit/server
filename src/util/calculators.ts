@@ -7,7 +7,7 @@ export const calculateSubscriptionDuration = (name: String): number => {
 };
 
 export const calculatePrices = (name: String): number => {
-	if (name === "trial") return 90;
+	if (name === "trial") return 0;
 	else if (name === "monthly") return 180;
 	else if (name === "half-yearly") return 360;
 	else if (name === "yearly") return 2000;

@@ -59,7 +59,11 @@ router.post(
 				await user.save();
 			}
 
-			console.log("Regular Subber", subscription);
+			console.log("Regular Subber", {
+				...subscription,
+				amountInGBP: subscription.payment.amountInGBP,
+				user: subscription.user.id,
+			});
 
 			if (!subscription) {
 				return res

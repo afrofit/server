@@ -15,7 +15,7 @@ const calculateSubscriptionDuration = (name) => {
 exports.calculateSubscriptionDuration = calculateSubscriptionDuration;
 const calculatePrices = (name) => {
     if (name === "trial")
-        return 90;
+        return 0;
     else if (name === "monthly")
         return 180;
     else if (name === "half-yearly")

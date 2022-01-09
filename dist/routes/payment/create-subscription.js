@@ -61,7 +61,7 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             user.isPremiumUntil = "";
             yield user.save();
         }
-        console.log("Regular Subber", subscription);
+        console.log("Regular Subber", Object.assign(Object.assign({}, subscription), { amountInGBP: subscription.payment.amountInGBP, user: subscription.user.id }));
         if (!subscription) {
             return res
                 .status(503)

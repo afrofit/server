@@ -20,9 +20,10 @@ const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const router = express_1.default.Router();
 exports.expireSubscriptionRouter = router;
-router.delete("/api/subscription/expire-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/api/subscription/expire-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { subscriptionId } = req.body;
-    // console.log("Sub ID", subscriptionId);
+    console.log("Expired Subscription Req Body", req.body);
+    console.log("Expired Subscription Sub ID", subscriptionId);
     if (!req.currentUser)
         return res.status(403).send("Access Forbidden.");
     //Find a user from the header token here
@@ -37,7 +38,9 @@ router.delete("/api/subscription/expire-subscription", [isAuth_1.isAuth, isCurre
     });
     console.log("Did we find a Current Subsciption Object?", currentSub);
     if (!currentSub)
-        return res.status(400).send("Something wrong with this subscription!");
+        return res
+            .status(400)
+            .send("This subscription doesn't exist or is expired!");
     // console.log(currentSub);
     try {
         currentSub.isExpired = true;

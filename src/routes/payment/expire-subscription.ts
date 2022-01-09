@@ -6,12 +6,13 @@ import { isCurrentUser } from "../../middleware/isCurrentUser";
 
 const router = express.Router();
 
-router.delete(
+router.post(
 	"/api/subscription/expire-subscription",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const { subscriptionId } = req.body;
-		// console.log("Sub ID", subscriptionId);
+		console.log("Expired Subscription Req Body", req.body);
+		console.log("Expired Subscription Sub ID", subscriptionId);
 		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
 
 		//Find a user from the header token here
@@ -28,7 +29,9 @@ router.delete(
 		console.log("Did we find a Current Subsciption Object?", currentSub);
 
 		if (!currentSub)
-			return res.status(400).send("Something wrong with this subscription!");
+			return res
+				.status(400)
+				.send("This subscription doesn't exist or is expired!");
 
 		// console.log(currentSub);
 		try {
