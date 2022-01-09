@@ -14,6 +14,8 @@ import { resendResetPasswordVerifyCode } from "./routes/auth/resend-reset-passwo
 import { resendVerifyCode } from "./routes/auth/resend-verify-code";
 import { changePasswordRouter } from "./routes/auth/change-username";
 import { createSubscriptionRouter } from "./routes/payment/create-subscription";
+import { expireSubscriptionRouter } from "./routes/payment/expire-subscription";
+import { getSubscriptionRouter } from "./routes/payment/get-subscription";
 
 const app = express();
 app.set("trust proxy", true);
@@ -36,6 +38,8 @@ app.use(changePasswordRouter);
 
 //Subscription Routes
 app.use(createSubscriptionRouter);
+app.use(expireSubscriptionRouter);
+app.use(getSubscriptionRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	return res.send("Welcome to the Afrofit API.");

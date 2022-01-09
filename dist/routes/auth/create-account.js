@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createAccountRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const Subscription_1 = require("../../entity/Subscription");
 const User_1 = require("../../entity/User");
 const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const UserPerformance_1 = require("../../entity/UserPerformance");
@@ -44,12 +43,6 @@ router.post("/api/users/create-account", (req, res) => __awaiter(void 0, void 0,
             code: verificationCode,
             rankId: 1,
         }).save();
-        const subscription = yield Subscription_1.Subscription.create({
-            name: Subscription_1.SubscriptionName.TRIAL,
-            durationInDays: Subscription_1.SubscriptionDuration.TRIAL,
-            amountinGBP: 0,
-            user: user,
-        }).save();
         const performance = yield UserPerformance_1.UserPerformance.create({
             totalBodyMoves: 0,
             totalDaysActive: 0,
@@ -62,7 +55,7 @@ router.post("/api/users/create-account", (req, res) => __awaiter(void 0, void 0,
             bodyMoves: 0,
             user,
         }).save();
-        if (!subscription || !performance || !activity)
+        if (!performance || !activity)
             console.error("Could not create a subscription!");
         console.log("Create Account Code: ", user.code);
         //Send verification email at this point

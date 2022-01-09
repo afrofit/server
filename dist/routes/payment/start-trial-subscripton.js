@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSubscriptionRouter = void 0;
+exports.startTrialSubscriptionRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const Payment_1 = require("../../entity/Payment");
 const Subscription_1 = require("../../entity/Subscription");
@@ -20,26 +20,21 @@ const User_1 = require("../../entity/User");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const calculators_1 = require("../../util/calculators");
-const validate_responses_1 = require("../../util/validate-responses");
 const router = express_1.default.Router();
-exports.createSubscriptionRouter = router;
-router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { subscriptionData } = req.body;
+exports.startTrialSubscriptionRouter = router;
+router.post("/api/subscription/start-trial-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(403).send("Access Forbidden.");
-    const { error } = (0, validate_responses_1.validateSubscriptionData)(req.body);
-    if (error)
-        return res.status(400).send(error.details[0].message);
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
     if (!user)
         return res.status(400).send("Sorry! Something went wrong.");
     try {
         let payment = new Payment_1.Payment();
         payment.user = user;
-        payment.amountInGBP = (0, calculators_1.calculatePrices)(subscriptionData);
+        payment.amountInGBP = (0, calculators_1.calculatePrices)("trial");
         const subscription = yield Subscription_1.Subscription.create({
-            name: subscriptionData,
-            durationInDays: (0, calculators_1.calculateSubscriptionDuration)(subscriptionData),
+            name: "trial",
+            durationInDays: (0, calculators_1.calculateSubscriptionDuration)("trial"),
             user,
             payment,
             subscriberId: user.id,
@@ -47,21 +42,10 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
         const subscriptionEndDate = subscription.calculateEndDate();
         subscription.endDate = subscriptionEndDate;
         yield subscription.save();
-        if (subscriptionData !== "trial") {
-            user.isPremium = true;
-            user.isPremiumUntil = subscriptionEndDate;
-            user.isTrial = false;
-            user.isTrialUntil = "";
-            yield user.save();
-        }
-        else {
-            user.isTrial = true;
-            user.isTrialUntil = subscriptionEndDate;
-            user.isPremium = false;
-            user.isPremiumUntil = "";
-            yield user.save();
-        }
-        console.log("Regular Subber", subscription);
+        console.log("Trial Subber", subscription);
+        user.isTrial = true;
+        user.isTrialUntil = subscriptionEndDate;
+        yield user.save();
         if (!subscription) {
             return res
                 .status(503)
@@ -84,10 +68,7 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             startDate: subscription.createdAt,
             endDate: (0, calculators_1.calculateSubscriptionEndDate)(subscription.createdAt, subscription.durationInDays),
         };
-        const token = user.generateToken();
-        return res
-            .header(process.env.CUSTOM_TOKEN_HEADER, token)
-            .send({ token: token, response: response });
+        return res.status(200).send(Object.assign({}, response));
     }
     catch (error) {
         console.error(error);

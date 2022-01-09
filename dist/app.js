@@ -29,6 +29,8 @@ const resend_reset_password_verify_code_1 = require("./routes/auth/resend-reset-
 const resend_verify_code_1 = require("./routes/auth/resend-verify-code");
 const change_username_1 = require("./routes/auth/change-username");
 const create_subscription_1 = require("./routes/payment/create-subscription");
+const expire_subscription_1 = require("./routes/payment/expire-subscription");
+const get_subscription_1 = require("./routes/payment/get-subscription");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -49,6 +51,8 @@ app.use(resend_reset_password_verify_code_1.resendResetPasswordVerifyCode);
 app.use(change_username_1.changePasswordRouter);
 //Subscription Routes
 app.use(create_subscription_1.createSubscriptionRouter);
+app.use(expire_subscription_1.expireSubscriptionRouter);
+app.use(get_subscription_1.getSubscriptionRouter);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });

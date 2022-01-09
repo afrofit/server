@@ -40,13 +40,6 @@ router.post(
 				rankId: 1,
 			}).save();
 
-			const subscription = await Subscription.create({
-				name: SubscriptionName.TRIAL,
-				durationInDays: SubscriptionDuration.TRIAL,
-				amountinGBP: 0,
-				user: user,
-			}).save();
-
 			const performance = await UserPerformance.create({
 				totalBodyMoves: 0,
 				totalDaysActive: 0,
@@ -61,7 +54,7 @@ router.post(
 				user,
 			}).save();
 
-			if (!subscription || !performance || !activity)
+			if (!performance || !activity)
 				console.error("Could not create a subscription!");
 
 			console.log("Create Account Code: ", user.code);

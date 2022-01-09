@@ -45,6 +45,8 @@ let User = class User extends typeorm_1.BaseEntity {
             id: this.id,
             email: this.email,
             isPremium: this.isPremium,
+            isTrial: this.isTrial,
+            isTrialUntil: this.isTrialUntil,
             isVerified: this.isVerified,
             isPremiumUntil: this.isPremiumUntil,
             isAdmin: this.isAdmin,
@@ -104,10 +106,18 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
+], User.prototype, "isTrial", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "isTrialUntil", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
 ], User.prototype, "isPremium", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Date)
+    __metadata("design:type", String)
 ], User.prototype, "isPremiumUntil", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),

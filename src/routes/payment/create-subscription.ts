@@ -1,19 +1,16 @@
 import express, { Request, Response } from "express";
 import _ from "lodash";
 import { Payment } from "../../entity/Payment";
-import {
-	Subscription,
-	SubscriptionDuration,
-	SubscriptionName,
-} from "../../entity/Subscription";
+import { Subscription } from "../../entity/Subscription";
 import { User } from "../../entity/User";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
 import {
 	calculatePrices,
 	calculateSubscriptionDuration,
+	calculateSubscriptionEndDate,
 } from "../../util/calculators";
-import { validateSubscriptionType } from "../../util/validate-responses";
+import { validateSubscriptionData } from "../../util/validate-responses";
 
 const router = express.Router();
 
@@ -22,31 +19,47 @@ router.post(
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const { subscriptionData } = req.body;
+
 		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
 
-		const { error } = validateSubscriptionType(req.body);
+		const { error } = validateSubscriptionData(req.body);
 		if (error) return res.status(400).send(error.details[0].message);
 
-		//Find a user from the header token
 		let user = await User.findOne({ email: req.currentUser.email });
 		if (!user) return res.status(400).send("Sorry! Something went wrong.");
 
 		try {
-			//First we must create a payment and then when that is successful we can create a subscription
 			let payment = new Payment();
 			payment.user = user;
 			payment.amountInGBP = calculatePrices(subscriptionData);
-
-			// First we need to find a current subscription.
-			// If there is one, we can advise the user that a current one exists
-			// and they should cancel that one instead
 
 			const subscription = await Subscription.create({
 				name: subscriptionData,
 				durationInDays: calculateSubscriptionDuration(subscriptionData),
 				user,
 				payment,
+				subscriberId: user.id,
 			}).save();
+
+			const subscriptionEndDate = subscription.calculateEndDate();
+			subscription.endDate = subscriptionEndDate;
+			await subscription.save();
+
+			if (subscriptionData !== "trial") {
+				user.isPremium = true;
+				user.isPremiumUntil = subscriptionEndDate;
+				user.isTrial = false;
+				user.isTrialUntil = "";
+				await user.save();
+			} else {
+				user.isTrial = true;
+				user.isTrialUntil = subscriptionEndDate;
+				user.isPremium = false;
+				user.isPremiumUntil = "";
+				await user.save();
+			}
+
+			console.log("Regular Subber", subscription);
 
 			if (!subscription) {
 				return res
@@ -58,17 +71,29 @@ router.post(
 			await payment.save();
 			if (!payment) return res.status(401).send("Payment failed");
 
-			console.log("Subscription", subscription);
-			const subscriptionReponse = _.pick(subscription, [
-				"name",
-				"durationInDays",
-				"createdAt",
-				"isExpired",
-			]);
-			const paymentResponse = _.pick(payment, ["amountInGBP"]);
-			const cumulativeResponse = { ...subscriptionReponse, ...paymentResponse };
-			// console.log("Created Cumulative (Clientxx) Response", cumulativeResponse);
-			return res.status(200).send({ ...cumulativeResponse });
+			// console.log("Subscription", subscription);
+			// console.log("Payment", payment);
+
+			const response = {
+				paymentId: payment.id,
+				isExpired: subscription.isExpired,
+				id: subscription.id,
+				userId: subscription.user.id,
+				amountInGBP: subscription.payment.amountInGBP,
+				name: subscription.name,
+				durationInDays: subscription.durationInDays,
+				startDate: subscription.createdAt,
+				endDate: calculateSubscriptionEndDate(
+					subscription.createdAt,
+					subscription.durationInDays
+				),
+			};
+
+			const token = user.generateToken();
+
+			return res
+				.header(process.env.CUSTOM_TOKEN_HEADER!, token)
+				.send({ token: token, response: response });
 		} catch (error) {
 			console.error(error);
 		}
@@ -77,14 +102,3 @@ router.post(
 );
 
 export { router as createSubscriptionRouter };
-
-/*
-I wanna return
-
-name,
-durationInDays,
-payment.id,
-createdAt as "Subscription StartDate"
-subscription.id
-
-*/

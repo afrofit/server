@@ -29,6 +29,12 @@ var SubscriptionDuration;
     SubscriptionDuration[SubscriptionDuration["YEAR"] = 365] = "YEAR";
 })(SubscriptionDuration = exports.SubscriptionDuration || (exports.SubscriptionDuration = {}));
 let Subscription = class Subscription extends typeorm_1.BaseEntity {
+    calculateEndDate() {
+        const date = new Date(this.createdAt);
+        const result = date.setDate(date.getDate() + this.durationInDays);
+        // return `${result}`;
+        return new Date(result).toISOString();
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
@@ -51,6 +57,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Subscription.prototype, "durationInDays", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Subscription.prototype, "subscriberId", void 0);
+__decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], Subscription.prototype, "isExpired", void 0);
@@ -62,6 +72,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], Subscription.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Subscription.prototype, "endDate", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)((type) => Payment_1.Payment, (payment) => payment.subscription),
     (0, typeorm_1.JoinColumn)(),

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSubscriptionRouter = void 0;
+exports.startTrialSubscriptionRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const Payment_1 = require("../../entity/Payment");
 const Subscription_1 = require("../../entity/Subscription");
@@ -22,9 +22,11 @@ const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const calculators_1 = require("../../util/calculators");
 const validate_responses_1 = require("../../util/validate-responses");
 const router = express_1.default.Router();
-exports.createSubscriptionRouter = router;
-router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.startTrialSubscriptionRouter = router;
+router.post("/api/subscription/start-trial-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { subscriptionData } = req.body;
+    // console.log("Request Body", req.body);
+    // console.log("Subscription Data", subscriptionData, typeof subscriptionData);
     if (!req.currentUser)
         return res.status(403).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateSubscriptionData)(req.body);
@@ -44,24 +46,15 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             payment,
             subscriberId: user.id,
         }).save();
-        const subscriptionEndDate = subscription.calculateEndDate();
-        subscription.endDate = subscriptionEndDate;
-        yield subscription.save();
-        if (subscriptionData !== "trial") {
-            user.isPremium = true;
-            user.isPremiumUntil = subscriptionEndDate;
-            user.isTrial = false;
-            user.isTrialUntil = "";
-            yield user.save();
+        try {
+            const subscriptionEndDate = subscription.calculateEndDate();
+            subscription.endDate = subscriptionEndDate;
+            yield subscription.save();
+            console.log("Subber", subscription);
         }
-        else {
-            user.isTrial = true;
-            user.isTrialUntil = subscriptionEndDate;
-            user.isPremium = false;
-            user.isPremiumUntil = "";
-            yield user.save();
+        catch (error) {
+            console.error(error);
         }
-        console.log("Regular Subber", subscription);
         if (!subscription) {
             return res
                 .status(503)
@@ -84,10 +77,7 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             startDate: subscription.createdAt,
             endDate: (0, calculators_1.calculateSubscriptionEndDate)(subscription.createdAt, subscription.durationInDays),
         };
-        const token = user.generateToken();
-        return res
-            .header(process.env.CUSTOM_TOKEN_HEADER, token)
-            .send({ token: token, response: response });
+        return res.status(200).send(Object.assign({}, response));
     }
     catch (error) {
         console.error(error);

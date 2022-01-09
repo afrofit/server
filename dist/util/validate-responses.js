@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateSubscriptionType = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
+exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
 const joi_1 = __importDefault(require("joi"));
 const validateCreateAccount = (user) => {
     const schema = joi_1.default.object({
@@ -50,10 +50,17 @@ const validateUsername = (username) => {
     return schema.validate(username);
 };
 exports.validateUsername = validateUsername;
-const validateSubscriptionType = (subscriptionType) => {
+const validateSubscriptionData = (subscriptionData) => {
     const schema = joi_1.default.object({
-        subscriptionType: joi_1.default.string().required(),
+        subscriptionData: joi_1.default.string().required(),
     });
-    return schema.validate(subscriptionType);
+    return schema.validate(subscriptionData);
 };
-exports.validateSubscriptionType = validateSubscriptionType;
+exports.validateSubscriptionData = validateSubscriptionData;
+const validateSubscriptionParams = (subscriptionId) => {
+    const schema = joi_1.default.object({
+        subscriptionId: joi_1.default.string().required(),
+    });
+    return schema.validate(subscriptionId);
+};
+exports.validateSubscriptionParams = validateSubscriptionParams;

@@ -1,5 +1,8 @@
 import Joi from "joi";
-import { VerifySubscriptionType } from "./subscription-types";
+import {
+	VerifySubscriptionData,
+	VerifySubscriptionParams,
+} from "./subscription-types";
 import {
 	CreateAccountType,
 	PasswordType,
@@ -58,12 +61,22 @@ export const validateUsername = (username: VerifyUsernameType) => {
 	return schema.validate(username);
 };
 
-export const validateSubscriptionType = (
-	subscriptionType: VerifySubscriptionType
+export const validateSubscriptionData = (
+	subscriptionData: VerifySubscriptionData
 ) => {
 	const schema = Joi.object({
-		subscriptionType: Joi.string().required(),
+		subscriptionData: Joi.string().required(),
 	});
 
-	return schema.validate(subscriptionType);
+	return schema.validate(subscriptionData);
+};
+
+export const validateSubscriptionParams = (
+	subscriptionId: VerifySubscriptionParams
+) => {
+	const schema = Joi.object({
+		subscriptionId: Joi.string().required(),
+	});
+
+	return schema.validate(subscriptionId);
 };

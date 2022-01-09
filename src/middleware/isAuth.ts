@@ -6,6 +6,8 @@ export interface UserPayload {
 	email: string;
 	isPremium: boolean;
 	isPremiumUntil: string;
+	isTrial: boolean;
+	isTrialUntil: string;
 	isVerified: boolean;
 	isRegistered: boolean;
 	isAdmin: boolean;
