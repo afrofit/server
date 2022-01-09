@@ -42,6 +42,9 @@ export class User extends BaseEntity {
 	@Column({ nullable: true })
 	pushNotificationToken: string;
 
+	@Column({ default: true })
+	hasTrial: boolean;
+
 	@Column({ default: false })
 	isTrial: boolean;
 
@@ -129,6 +132,7 @@ export class User extends BaseEntity {
 				id: this.id,
 				email: this.email,
 				isPremium: this.isPremium,
+				hasTrial: this.hasTrial,
 				isTrial: this.isTrial,
 				isTrialUntil: this.isTrialUntil,
 				isVerified: this.isVerified,

@@ -34,10 +34,11 @@ router.post(
 				.send("This subscription doesn't exist or is expired!");
 
 		// console.log(currentSub);
+
 		try {
 			currentSub.isExpired = true;
 			await currentSub.save();
-
+			user.hasTrial = false;
 			user.isTrial = false;
 			user.isPremium = false;
 			user.isPremiumUntil = "";

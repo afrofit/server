@@ -33,6 +33,9 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
     if (!user)
         return res.status(400).send("Sorry! Something went wrong.");
+    // Let's check if user has already used a trial in the past
+    if (subscriptionData === "trial" && !user.hasTrial)
+        return res.status(400).send("Sorry! This user has already used a trial");
     try {
         let payment = new Payment_1.Payment();
         payment.user = user;
@@ -56,6 +59,7 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
         }
         else {
             user.isTrial = true;
+            user.hasTrial = false;
             user.isTrialUntil = subscriptionEndDate;
             user.isPremium = false;
             user.isPremiumUntil = "";

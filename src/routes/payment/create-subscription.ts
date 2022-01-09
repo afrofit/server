@@ -28,6 +28,10 @@ router.post(
 		let user = await User.findOne({ email: req.currentUser.email });
 		if (!user) return res.status(400).send("Sorry! Something went wrong.");
 
+		// Let's check if user has already used a trial in the past
+		if (subscriptionData === "trial" && !user.hasTrial)
+			return res.status(400).send("Sorry! This user has already used a trial");
+
 		try {
 			let payment = new Payment();
 			payment.user = user;
@@ -53,6 +57,7 @@ router.post(
 				await user.save();
 			} else {
 				user.isTrial = true;
+				user.hasTrial = false;
 				user.isTrialUntil = subscriptionEndDate;
 				user.isPremium = false;
 				user.isPremiumUntil = "";

@@ -45,6 +45,7 @@ router.post("/api/subscription/expire-subscription", [isAuth_1.isAuth, isCurrent
     try {
         currentSub.isExpired = true;
         yield currentSub.save();
+        user.hasTrial = false;
         user.isTrial = false;
         user.isPremium = false;
         user.isPremiumUntil = "";
