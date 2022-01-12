@@ -2,24 +2,24 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 	Column,
-	OneToOne,
-	JoinColumn,
+	// OneToOne,
+	// JoinColumn,
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
 } from "typeorm";
-import { User } from "./User";
+// import { User } from "./User";
 
 @Entity()
-export class UserActivityToday extends BaseEntity {
+export class UserScore extends BaseEntity {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
 	@Column()
-	caloriesBurned: number;
+	userId: string;
 
 	@Column()
-	userId: string;
+	score: number;
 
 	@Column()
 	bodyMoves: number;
@@ -29,8 +29,4 @@ export class UserActivityToday extends BaseEntity {
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@OneToOne((type) => User, (user) => user.activityToday)
-	@JoinColumn()
-	user: User;
 }

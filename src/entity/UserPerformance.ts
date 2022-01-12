@@ -16,6 +16,9 @@ export class UserPerformance extends BaseEntity {
 	id: string;
 
 	@Column()
+	userId: string;
+
+	@Column()
 	totalBodyMoves: number;
 
 	@Column()

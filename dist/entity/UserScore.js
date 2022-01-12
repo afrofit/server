@@ -9,41 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserActivityToday = void 0;
+exports.UserScore = void 0;
 const typeorm_1 = require("typeorm");
-const User_1 = require("./User");
-let UserActivityToday = class UserActivityToday extends typeorm_1.BaseEntity {
+// import { User } from "./User";
+let UserScore = class UserScore extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], UserActivityToday.prototype, "caloriesBurned", void 0);
+], UserScore.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "userId", void 0);
+], UserScore.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], UserActivityToday.prototype, "bodyMoves", void 0);
+], UserScore.prototype, "score", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], UserScore.prototype, "bodyMoves", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "createdAt", void 0);
+], UserScore.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.activityToday),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", User_1.User)
-], UserActivityToday.prototype, "user", void 0);
-UserActivityToday = __decorate([
+], UserScore.prototype, "updatedAt", void 0);
+UserScore = __decorate([
     (0, typeorm_1.Entity)()
-], UserActivityToday);
-exports.UserActivityToday = UserActivityToday;
+], UserScore);
+exports.UserScore = UserScore;

@@ -23,3 +23,16 @@ export const calculateSubscriptionEndDate = (
 	const result: number = date.setDate(date.getDate() + duration);
 	return new Date(result);
 };
+
+export const calculateDayStart = (): { [key: string]: number } => {
+	const date = new Date();
+	date.setHours(0);
+	date.setMinutes(0);
+	date.setSeconds(0);
+	return {
+		month: date.getMonth(),
+		day: date.getDay(),
+		year: date.getFullYear(),
+		fullDate: date.getDate(),
+	};
+};

@@ -20,6 +20,10 @@ __decorate([
 ], UserPerformance.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UserPerformance.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], UserPerformance.prototype, "totalBodyMoves", void 0);
 __decorate([

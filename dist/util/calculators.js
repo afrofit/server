@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateSubscriptionEndDate = exports.calculatePrices = exports.calculateSubscriptionDuration = void 0;
+exports.calculateDayStart = exports.calculateSubscriptionEndDate = exports.calculatePrices = exports.calculateSubscriptionDuration = void 0;
 const calculateSubscriptionDuration = (name) => {
     if (name === "trial")
         return 7;
@@ -33,3 +33,16 @@ const calculateSubscriptionEndDate = (startDate, duration) => {
     return new Date(result);
 };
 exports.calculateSubscriptionEndDate = calculateSubscriptionEndDate;
+const calculateDayStart = () => {
+    const date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    return {
+        month: date.getMonth(),
+        day: date.getDay(),
+        year: date.getFullYear(),
+        fullDate: date.getDate(),
+    };
+};
+exports.calculateDayStart = calculateDayStart;
