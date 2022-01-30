@@ -1,3 +1,4 @@
+import { endOfToday, startOfToday } from "date-fns";
 import {
 	Entity,
 	PrimaryGeneratedColumn,
@@ -7,6 +8,7 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
+	BeforeInsert,
 } from "typeorm";
 import { User } from "./User";
 
@@ -15,14 +17,20 @@ export class UserActivityToday extends BaseEntity {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column()
+	@Column({ default: 0 })
 	caloriesBurned: number;
 
 	@Column()
 	userId: string;
 
-	@Column()
+	@Column({ default: 0 })
 	bodyMoves: number;
+
+	@Column()
+	dayStartTime: Date;
+
+	@Column()
+	dayEndTime: Date;
 
 	@CreateDateColumn()
 	createdAt: string;
@@ -33,4 +41,10 @@ export class UserActivityToday extends BaseEntity {
 	@OneToOne((type) => User, (user) => user.activityToday)
 	@JoinColumn()
 	user: User;
+
+	@BeforeInsert()
+	setDates(): void {
+		this.dayStartTime = startOfToday();
+		this.dayEndTime = endOfToday();
+	}
 }

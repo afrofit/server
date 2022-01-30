@@ -7,6 +7,7 @@
    "devDependencies": {
       "@types/body-parser": "^1.19.1",
       "@types/compression": "^1.7.2",
+      "@types/cron": "^1.7.3",
       "@types/dotenv": "^8.2.0",
       "@types/express": "^4.17.13",
       "@types/jsonwebtoken": "^8.5.5",
@@ -24,6 +25,8 @@
       "argon2": "^0.28.2",
       "body-parser": "^1.19.0",
       "compression": "^1.7.4",
+      "cron": "^1.8.2",
+      "date-fns": "^2.28.0",
       "dayjs": "^1.10.7",
       "dotenv": "^10.0.0",
       "express": "^4.17.1",

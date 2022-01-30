@@ -2,8 +2,10 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + "/.env" });
 import { createConnection, Connection, getConnectionOptions } from "typeorm";
+import { CronJob } from "cron";
 
 import { app } from "./app";
+import { createWeeklyLeaderboard } from "./controllers/create-weekly-leaderboard";
 
 const start = async () => {
 	//Check if necessary env vars are set
@@ -36,6 +38,16 @@ const start = async () => {
 	await createConnection({ ...connectionOptions, type: "postgres" });
 	console.log("Connected via TypeORM to Postgres Database!");
 	app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}!`));
+	const job = new CronJob("1 * * * * *", function () {
+		createWeeklyLeaderboard();
+		// console.log(
+		// 	"Job has started at " + new Date().getTime(),
+		// 	null,
+		// 	true,
+		// 	"America/Los Angeles"
+		// );
+	});
+	job.start();
 };
 
 start().catch((error) => console.error(error));

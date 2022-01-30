@@ -5,3 +5,8 @@ export type VerifySubscriptionData = {
 export type VerifySubscriptionParams = {
 	subscriptionId: string;
 };
+
+export type UserDailyActivityType = {
+	caloriesBurned: number;
+	bodyMoves: number;
+};

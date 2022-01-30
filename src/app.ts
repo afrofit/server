@@ -16,6 +16,9 @@ import { changePasswordRouter } from "./routes/auth/change-username";
 import { createSubscriptionRouter } from "./routes/payment/create-subscription";
 import { expireSubscriptionRouter } from "./routes/payment/expire-subscription";
 import { getSubscriptionRouter } from "./routes/payment/get-subscription";
+import { createLeaderboardRouter } from "./routes/marathon/create-leaderboard";
+import { getUserDailyActivityRouter } from "./routes/performance/get-user-daily-activity";
+import { updateUserDailyActivityRouter } from "./routes/performance/update-user-daily-activity";
 
 const app = express();
 app.set("trust proxy", true);
@@ -40,6 +43,13 @@ app.use(changePasswordRouter);
 app.use(createSubscriptionRouter);
 app.use(expireSubscriptionRouter);
 app.use(getSubscriptionRouter);
+
+//Marathon Routes
+app.use(createLeaderboardRouter);
+
+//User Activity Routes
+app.use(getUserDailyActivityRouter);
+app.use(updateUserDailyActivityRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	return res.send("Welcome to the Afrofit API.");

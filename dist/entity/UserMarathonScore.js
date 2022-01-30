@@ -9,44 +9,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserScore = void 0;
+exports.UserMarathonScore = void 0;
 const typeorm_1 = require("typeorm");
 // import { User } from "./User";
-let UserScore = class UserScore extends typeorm_1.BaseEntity {
+let UserMarathonScore = class UserMarathonScore extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], UserScore.prototype, "id", void 0);
+], UserMarathonScore.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserScore.prototype, "userId", void 0);
+], UserMarathonScore.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserScore.prototype, "marathonId", void 0);
+], UserMarathonScore.prototype, "marathonId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
-], UserScore.prototype, "isExpired", void 0);
+], UserMarathonScore.prototype, "isExpired", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], UserScore.prototype, "score", void 0);
+], UserMarathonScore.prototype, "score", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], UserScore.prototype, "bodyMoves", void 0);
+], UserMarathonScore.prototype, "bodyMoves", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
-], UserScore.prototype, "createdAt", void 0);
+], UserMarathonScore.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
-], UserScore.prototype, "updatedAt", void 0);
-UserScore = __decorate([
+], UserMarathonScore.prototype, "updatedAt", void 0);
+UserMarathonScore = __decorate([
     (0, typeorm_1.Entity)()
-], UserScore);
-exports.UserScore = UserScore;
+], UserMarathonScore);
+exports.UserMarathonScore = UserMarathonScore;

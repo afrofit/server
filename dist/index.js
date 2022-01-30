@@ -32,7 +32,9 @@ require("reflect-metadata");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config({ path: __dirname + "/.env" });
 const typeorm_1 = require("typeorm");
+const cron_1 = require("cron");
 const app_1 = require("./app");
+const create_weekly_leaderboard_1 = require("./controllers/create-weekly-leaderboard");
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     //Check if necessary env vars are set
     const PORT = process.env.PORT || 4000;
@@ -61,5 +63,15 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, typeorm_1.createConnection)(Object.assign(Object.assign({}, connectionOptions), { type: "postgres" }));
     console.log("Connected via TypeORM to Postgres Database!");
     app_1.app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}!`));
+    const job = new cron_1.CronJob("1 * * * * *", function () {
+        (0, create_weekly_leaderboard_1.createWeeklyLeaderboard)();
+        // console.log(
+        // 	"Job has started at " + new Date().getTime(),
+        // 	null,
+        // 	true,
+        // 	"America/Los Angeles"
+        // );
+    });
+    job.start();
 });
 start().catch((error) => console.error(error));

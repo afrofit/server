@@ -1,5 +1,6 @@
 import Joi from "joi";
 import {
+	UserDailyActivityType,
 	VerifySubscriptionData,
 	VerifySubscriptionParams,
 } from "./subscription-types";
@@ -79,4 +80,15 @@ export const validateSubscriptionParams = (
 	});
 
 	return schema.validate(subscriptionId);
+};
+
+export const validateUserActivityToday = (
+	userActivityDailyData: UserDailyActivityType
+) => {
+	const schema = Joi.object({
+		bodyMoves: Joi.number().required(),
+		caloriesBurned: Joi.number().required(),
+	});
+
+	return schema.validate(userActivityDailyData);
 };

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
+exports.validateUserActivityToday = exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
 const joi_1 = __importDefault(require("joi"));
 const validateCreateAccount = (user) => {
     const schema = joi_1.default.object({
@@ -64,3 +64,11 @@ const validateSubscriptionParams = (subscriptionId) => {
     return schema.validate(subscriptionId);
 };
 exports.validateSubscriptionParams = validateSubscriptionParams;
+const validateUserActivityToday = (userActivityDailyData) => {
+    const schema = joi_1.default.object({
+        bodyMoves: joi_1.default.number().required(),
+        caloriesBurned: joi_1.default.number().required(),
+    });
+    return schema.validate(userActivityDailyData);
+};
+exports.validateUserActivityToday = validateUserActivityToday;

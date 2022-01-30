@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateDayStart = exports.calculateSubscriptionEndDate = exports.calculatePrices = exports.calculateSubscriptionDuration = void 0;
+exports.calculateWeekStart = exports.calculateDayStart = exports.calculateSubscriptionEndDate = exports.calculatePrices = exports.calculateSubscriptionDuration = void 0;
 const calculateSubscriptionDuration = (name) => {
     if (name === "trial")
         return 7;
@@ -46,3 +46,10 @@ const calculateDayStart = () => {
     };
 };
 exports.calculateDayStart = calculateDayStart;
+const calculateWeekStart = (currentDate) => {
+    // What's the month, year and day of currentDate?
+    // The start of the week is always Sunday = 0;
+    // So if today is not 0, then look for the day before that day that is of zero
+    // locate that day by getting the real date
+};
+exports.calculateWeekStart = calculateWeekStart;

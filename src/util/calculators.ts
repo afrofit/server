@@ -36,3 +36,10 @@ export const calculateDayStart = (): { [key: string]: number } => {
 		fullDate: date.getDate(),
 	};
 };
+
+export const calculateWeekStart = (currentDate: Date) => {
+	// What's the month, year and day of currentDate?
+	// The start of the week is always Sunday = 0;
+	// So if today is not 0, then look for the day before that day that is of zero
+	// locate that day by getting the real date
+};

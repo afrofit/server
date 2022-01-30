@@ -9,60 +9,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserActivityToday = void 0;
+exports.Leaderboard = void 0;
 const date_fns_1 = require("date-fns");
 const typeorm_1 = require("typeorm");
-const User_1 = require("./User");
-let UserActivityToday = class UserActivityToday extends typeorm_1.BaseEntity {
-    setDates() {
-        this.dayStartTime = (0, date_fns_1.startOfToday)();
-        this.dayEndTime = (0, date_fns_1.endOfToday)();
+let Leaderboard = class Leaderboard extends typeorm_1.BaseEntity {
+    calculateEndDate() {
+        this.endDate = (0, date_fns_1.endOfWeek)(new Date());
+        this.startDate = (0, date_fns_1.startOfWeek)(new Date());
     }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], UserActivityToday.prototype, "caloriesBurned", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], UserActivityToday.prototype, "userId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], UserActivityToday.prototype, "bodyMoves", void 0);
+], Leaderboard.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
-], UserActivityToday.prototype, "dayStartTime", void 0);
+], Leaderboard.prototype, "endDate", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Date)
-], UserActivityToday.prototype, "dayEndTime", void 0);
+], Leaderboard.prototype, "startDate", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "createdAt", void 0);
+], Leaderboard.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
-], UserActivityToday.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.activityToday),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", User_1.User)
-], UserActivityToday.prototype, "user", void 0);
+], Leaderboard.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], UserActivityToday.prototype, "setDates", null);
-UserActivityToday = __decorate([
+], Leaderboard.prototype, "calculateEndDate", null);
+Leaderboard = __decorate([
     (0, typeorm_1.Entity)()
-], UserActivityToday);
-exports.UserActivityToday = UserActivityToday;
+], Leaderboard);
+exports.Leaderboard = Leaderboard;
