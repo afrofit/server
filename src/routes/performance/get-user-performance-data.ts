@@ -2,13 +2,14 @@ import express, { Request, Response } from "express";
 import { LessThan, MoreThan } from "typeorm";
 import { User } from "../../entity/User";
 import { UserActivityToday } from "../../entity/UserActivityToday";
+import { UserPerformance } from "../../entity/UserPerformance";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
 
 const router = express.Router();
 
 router.get(
-	"/api/performance/get-user-daily-activity",
+	"/api/performance/get-user-performance-data",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
@@ -18,29 +19,27 @@ router.get(
 
 		const NOW = new Date();
 
-		let userActivityToday;
+		let userPerformanceData;
 
 		try {
-			userActivityToday = await UserActivityToday.findOne({
+			userPerformanceData = await UserPerformance.findOne({
 				where: {
 					userId: user.id,
-					dayEndTime: MoreThan(NOW),
-					dayStartTime: LessThan(NOW),
 				},
 			});
 
-			if (!userActivityToday) {
-				userActivityToday = await UserActivityToday.create({
+			if (!userPerformanceData) {
+				userPerformanceData = await UserPerformance.create({
 					user,
-					userId: user.id,
+					// userId: user.id,
 				}).save();
 			}
 
-			return res.status(200).send(userActivityToday);
+			return res.status(200).send(userPerformanceData);
 		} catch (error) {
 			console.error(error);
 		}
 	}
 );
 
-export { router as getUserDailyActivityRouter };
+export { router as getUserPerformanceDataRouter };

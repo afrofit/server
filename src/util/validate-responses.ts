@@ -88,6 +88,8 @@ export const validateUserActivityToday = (
 	const schema = Joi.object({
 		bodyMoves: Joi.number().required(),
 		caloriesBurned: Joi.number().required(),
+		timeDanced: Joi.number().required(),
+		totalDaysActive: Joi.number().required(),
 	});
 
 	return schema.validate(userActivityDailyData);

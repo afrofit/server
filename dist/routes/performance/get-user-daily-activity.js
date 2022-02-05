@@ -30,7 +30,7 @@ router.get("/api/performance/get-user-daily-activity", [isAuth_1.isAuth, isCurre
     const NOW = new Date();
     let userActivityToday;
     try {
-        userActivityToday = yield UserActivityToday_1.UserActivityToday.find({
+        userActivityToday = yield UserActivityToday_1.UserActivityToday.findOne({
             where: {
                 userId: user.id,
                 dayEndTime: (0, typeorm_1.MoreThan)(NOW),
@@ -38,7 +38,10 @@ router.get("/api/performance/get-user-daily-activity", [isAuth_1.isAuth, isCurre
             },
         });
         if (!userActivityToday) {
-            userActivityToday = yield UserActivityToday_1.UserActivityToday.create({}).save();
+            userActivityToday = yield UserActivityToday_1.UserActivityToday.create({
+                user,
+                userId: user.id,
+            }).save();
         }
         return res.status(200).send(userActivityToday);
     }

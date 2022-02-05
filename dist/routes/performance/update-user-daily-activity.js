@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const typeorm_1 = require("typeorm");
 const User_1 = require("../../entity/User");
 const UserActivityToday_1 = require("../../entity/UserActivityToday");
+const UserPerformance_1 = require("../../entity/UserPerformance");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const validate_responses_1 = require("../../util/validate-responses");
@@ -28,12 +29,13 @@ router.post("/api/performance/update-user-daily-activity", [isAuth_1.isAuth, isC
     const { error } = (0, validate_responses_1.validateUserActivityToday)(req.body);
     if (error)
         return res.status(400).send(error.details[0].message);
-    const { bodyMoves, caloriesBurned } = req.body;
+    const { bodyMoves, caloriesBurned, totalDaysActive, timeDanced } = req.body;
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
         return res.status(400).send("Sorry! Something went wrong.");
     const NOW = new Date();
     let userActivityToday;
+    let overallUserPerformance;
     try {
         userActivityToday = yield UserActivityToday_1.UserActivityToday.findOne({
             where: {
@@ -48,6 +50,22 @@ router.post("/api/performance/update-user-daily-activity", [isAuth_1.isAuth, isC
         userActivityToday.bodyMoves + bodyMoves;
         userActivityToday.caloriesBurned + caloriesBurned;
         yield userActivityToday.save();
+        // Update UserPerformance
+        overallUserPerformance = yield UserPerformance_1.UserPerformance.findOne({
+            where: {
+                userId: user.id,
+            },
+        });
+        // Need logic to calculate total days active
+        if (!overallUserPerformance) {
+            overallUserPerformance = yield UserPerformance_1.UserPerformance.create().save();
+        }
+        else if (overallUserPerformance) {
+            overallUserPerformance.totalBodyMoves += bodyMoves;
+            overallUserPerformance.totalCaloriesBurned += caloriesBurned;
+            overallUserPerformance.totalDaysActive += 1;
+            overallUserPerformance.totalTimeDancedInMilliseconds += timeDanced;
+        }
         return res.status(201).send(userActivityToday);
     }
     catch (error) {

@@ -27,12 +27,12 @@ router.get(
 		// if true, set isExpired to true return null.
 
 		try {
-			const today = new Date();
-			const endDate = calculateSubscriptionEndDate(
+			const TODAY = new Date();
+			const END_DATE = calculateSubscriptionEndDate(
 				currentSub.createdAt,
 				currentSub.durationInDays
 			);
-			if (today > endDate) {
+			if (TODAY > END_DATE) {
 				currentSub.isExpired = true;
 				//You can trigger an email here
 				//check logic for three days to expiration and

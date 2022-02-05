@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserPerformance = void 0;
 const typeorm_1 = require("typeorm");
-const User_1 = require("./User");
 let UserPerformance = class UserPerformance extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -23,19 +22,19 @@ __decorate([
     __metadata("design:type", String)
 ], UserPerformance.prototype, "userId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
 ], UserPerformance.prototype, "totalBodyMoves", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
 ], UserPerformance.prototype, "totalCaloriesBurned", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
-], UserPerformance.prototype, "totalHoursDanced", void 0);
+], UserPerformance.prototype, "totalTimeDancedInMilliseconds", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
 ], UserPerformance.prototype, "totalDaysActive", void 0);
 __decorate([
@@ -46,11 +45,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], UserPerformance.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.performanceStats),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", User_1.User)
-], UserPerformance.prototype, "user", void 0);
 UserPerformance = __decorate([
     (0, typeorm_1.Entity)()
 ], UserPerformance);

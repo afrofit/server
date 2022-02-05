@@ -34,6 +34,7 @@ const get_subscription_1 = require("./routes/payment/get-subscription");
 const create_leaderboard_1 = require("./routes/marathon/create-leaderboard");
 const get_user_daily_activity_1 = require("./routes/performance/get-user-daily-activity");
 const update_user_daily_activity_1 = require("./routes/performance/update-user-daily-activity");
+const get_user_performance_data_1 = require("./routes/performance/get-user-performance-data");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -61,6 +62,7 @@ app.use(create_leaderboard_1.createLeaderboardRouter);
 //User Activity Routes
 app.use(get_user_daily_activity_1.getUserDailyActivityRouter);
 app.use(update_user_daily_activity_1.updateUserDailyActivityRouter);
+app.use(get_user_performance_data_1.getUserPerformanceDataRouter);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });

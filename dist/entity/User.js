@@ -31,7 +31,6 @@ const StoryPlayed_1 = require("./StoryPlayed");
 const Subscription_1 = require("./Subscription");
 const UserAchievement_1 = require("./UserAchievement");
 const UserActivityToday_1 = require("./UserActivityToday");
-const UserPerformance_1 = require("./UserPerformance");
 let User = class User extends typeorm_1.BaseEntity {
     // FUNCTIONS
     hashPassword(password = "") {
@@ -148,10 +147,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)(() => UserPerformance_1.UserPerformance, (userPerformance) => userPerformance.user),
-    __metadata("design:type", UserPerformance_1.UserPerformance)
-], User.prototype, "performanceStats", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => UserActivityToday_1.UserActivityToday, (activity) => activity.user),
     __metadata("design:type", UserActivityToday_1.UserActivityToday)

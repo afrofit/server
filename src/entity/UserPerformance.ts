@@ -18,16 +18,16 @@ export class UserPerformance extends BaseEntity {
 	@Column()
 	userId: string;
 
-	@Column()
+	@Column({ default: 0 })
 	totalBodyMoves: number;
 
-	@Column()
+	@Column({ default: 0 })
 	totalCaloriesBurned: number;
 
-	@Column()
-	totalHoursDanced: number;
+	@Column({ default: 0 })
+	totalTimeDancedInMilliseconds: number;
 
-	@Column()
+	@Column({ default: 0 })
 	totalDaysActive: number;
 
 	@CreateDateColumn()
@@ -35,8 +35,4 @@ export class UserPerformance extends BaseEntity {
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@OneToOne((type) => User, (user) => user.performanceStats)
-	@JoinColumn()
-	user: User;
 }

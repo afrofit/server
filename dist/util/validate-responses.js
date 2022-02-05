@@ -68,6 +68,8 @@ const validateUserActivityToday = (userActivityDailyData) => {
     const schema = joi_1.default.object({
         bodyMoves: joi_1.default.number().required(),
         caloriesBurned: joi_1.default.number().required(),
+        timeDanced: joi_1.default.number().required(),
+        totalDaysActive: joi_1.default.number().required(),
     });
     return schema.validate(userActivityDailyData);
 };

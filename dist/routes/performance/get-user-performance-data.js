@@ -12,39 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSubscriptionRouter = void 0;
+exports.getUserPerformanceDataRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const Subscription_1 = require("../../entity/Subscription");
 const User_1 = require("../../entity/User");
+const UserPerformance_1 = require("../../entity/UserPerformance");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
-const calculators_1 = require("../../util/calculators");
 const router = express_1.default.Router();
-exports.getSubscriptionRouter = router;
-router.get("/api/subscription/get-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getUserPerformanceDataRouter = router;
+router.get("/api/performance/get-user-performance-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(403).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
         return res.status(400).send("Sorry! Something went wrong.");
-    let currentSub = yield Subscription_1.Subscription.findOne({
-        subscriberId: req.currentUser.id,
-        isExpired: false,
-    });
-    if (!currentSub)
-        return res.send(null);
-    // Check to see if the endDate is elapsed --
-    // if true, set isExpired to true return null.
+    const NOW = new Date();
+    let userPerformanceData;
     try {
-        const TODAY = new Date();
-        const END_DATE = (0, calculators_1.calculateSubscriptionEndDate)(currentSub.createdAt, currentSub.durationInDays);
-        if (TODAY > END_DATE) {
-            currentSub.isExpired = true;
-            //You can trigger an email here
-            //check logic for three days to expiration and
-            //one week to so as to remind client to renew
+        userPerformanceData = yield UserPerformance_1.UserPerformance.findOne({
+            where: {
+                userId: user.id,
+            },
+        });
+        if (!userPerformanceData) {
+            userPerformanceData = yield UserPerformance_1.UserPerformance.create({
+                user,
+                // userId: user.id,
+            }).save();
         }
-        return res.status(200).send(currentSub);
+        return res.status(200).send(userPerformanceData);
     }
     catch (error) {
         console.error(error);

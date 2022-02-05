@@ -78,12 +78,6 @@ export class User extends BaseEntity {
 	// RELATIONS
 
 	@OneToOne(
-		() => UserPerformance,
-		(userPerformance: UserPerformance) => userPerformance.user
-	)
-	performanceStats: UserPerformance;
-
-	@OneToOne(
 		() => UserActivityToday,
 		(activity: UserActivityToday) => activity.user
 	)
