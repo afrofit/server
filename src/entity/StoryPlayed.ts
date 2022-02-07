@@ -2,16 +2,10 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 	Column,
-	OneToMany,
-	OneToOne,
-	JoinColumn,
-	ManyToOne,
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
 } from "typeorm";
-import { Story } from "./Story";
-import { User } from "./User";
 
 @Entity()
 export class StoryPlayed extends BaseEntity {
@@ -19,17 +13,16 @@ export class StoryPlayed extends BaseEntity {
 	id: string;
 
 	@Column()
-	name: string;
+	userId: string;
 
-	@OneToOne((type) => Story)
-	@JoinColumn()
-	story: Story;
+	@Column()
+	totalBodyMoves: number;
 
 	@Column({ default: false })
 	completed: boolean;
 
-	@ManyToOne((type) => User, (user) => user.storiesPlayed)
-	user: User;
+	@Column({ default: 0 })
+	totalUserTimeSpentInMillis: number;
 
 	@CreateDateColumn()
 	createdAt: string;

@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import _ from "lodash";
 import { User } from "../../entity/User";
 import { generateCode } from "../../util/generate-code";
+import { STATUS_CODE } from "../../util/status-codes";
 import { validateEmailResetCode } from "../../util/validate-responses";
 
 const router = express.Router();
@@ -11,10 +12,13 @@ router.post(
 	async (req: Request, res: Response) => {
 		const user = await User.findOne({ email: req.body.email });
 		if (!user)
-			return res.status(400).send("There is a problem with the email.");
+			return res
+				.status(STATUS_CODE.UNAUTHORIZED)
+				.send("There is a problem with the email.");
 
 		const { error } = validateEmailResetCode(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		const newCode = generateCode();
 
@@ -29,6 +33,7 @@ router.post(
 			const resetToken = user.generateResetToken();
 
 			return res
+				.status(STATUS_CODE.OK)
 				.header(process.env.CUSTOM_RESET_TOKEN_HEADER!, resetToken)
 				.send(resetToken);
 		} catch (error) {

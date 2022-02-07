@@ -1,14 +1,11 @@
 import { Response, Request, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { STATUS_CODE } from "../util/status-codes";
 
 export interface UserPayload {
 	id: string;
 	email: string;
 	isPremium: boolean;
-	isPremiumUntil: string;
-	hasTrial: boolean;
-	isTrial: boolean;
-	isTrialUntil: string;
 	isVerified: boolean;
 	isRegistered: boolean;
 	isAdmin: boolean;
@@ -27,7 +24,8 @@ declare global {
 
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
 	const token = req.header(process.env.CUSTOM_TOKEN_HEADER!);
-	if (!token) return res.status(401).send("Provide Valid Token.");
+	if (!token)
+		return res.status(STATUS_CODE.UNAUTHORIZED).send("Provide Valid Token.");
 
 	try {
 		const decoded = jwt.verify(
@@ -37,6 +35,6 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
 		req.currentUser = decoded;
 		next();
 	} catch (error) {
-		res.status(400).send("Invalid token provided.");
+		res.status(STATUS_CODE.BAD_REQUEST).send("Invalid token provided.");
 	}
 };

@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Award = void 0;
 const typeorm_1 = require("typeorm");
-const UserAchievement_1 = require("./UserAchievement");
 let Award = class Award extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -34,10 +33,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], Award.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)((type) => UserAchievement_1.UserAchievement, (userAchievement) => userAchievement.user),
-    __metadata("design:type", Array)
-], Award.prototype, "userAchievements", void 0);
 Award = __decorate([
     (0, typeorm_1.Entity)()
 ], Award);

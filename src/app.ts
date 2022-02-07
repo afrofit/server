@@ -20,6 +20,8 @@ import { createLeaderboardRouter } from "./routes/marathon/create-leaderboard";
 import { getUserDailyActivityRouter } from "./routes/performance/get-user-daily-activity";
 import { updateUserDailyActivityRouter } from "./routes/performance/update-user-daily-activity";
 import { getUserPerformanceDataRouter } from "./routes/performance/get-user-performance-data";
+import { saveUserActivityRouter } from "./routes/performance/save-user-activity";
+import { getStoriesContentRouter } from "./routes/content/get-stories-content";
 
 const app = express();
 app.set("trust proxy", true);
@@ -52,6 +54,10 @@ app.use(createLeaderboardRouter);
 app.use(getUserDailyActivityRouter);
 app.use(updateUserDailyActivityRouter);
 app.use(getUserPerformanceDataRouter);
+app.use(saveUserActivityRouter);
+
+//Content Routes
+app.use(getStoriesContentRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	return res.send("Welcome to the Afrofit API.");

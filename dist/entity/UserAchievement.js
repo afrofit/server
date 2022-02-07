@@ -11,14 +11,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAchievement = void 0;
 const typeorm_1 = require("typeorm");
-const Award_1 = require("./Award");
-const User_1 = require("./User");
 let UserAchievement = class UserAchievement extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], UserAchievement.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UserAchievement.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UserAchievement.prototype, "awardId", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
@@ -27,14 +33,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], UserAchievement.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)((type) => User_1.User, (user) => user.achievements),
-    __metadata("design:type", User_1.User)
-], UserAchievement.prototype, "user", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)((type) => Award_1.Award, (award) => award.userAchievements),
-    __metadata("design:type", Award_1.Award)
-], UserAchievement.prototype, "award", void 0);
 UserAchievement = __decorate([
     (0, typeorm_1.Entity)()
 ], UserAchievement);

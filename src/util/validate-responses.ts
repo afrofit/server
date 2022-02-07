@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { VerifyActivityData } from "./performance-types";
 import {
 	UserDailyActivityType,
 	VerifySubscriptionData,
@@ -93,4 +94,14 @@ export const validateUserActivityToday = (
 	});
 
 	return schema.validate(userActivityDailyData);
+};
+
+export const validateActivityData = (activityData: VerifyActivityData) => {
+	const schema = Joi.object({
+		caloriesBurned: Joi.number().required(),
+		bodyMoves: Joi.number().required(),
+		totalTimeDancedInMilliseconds: Joi.number().required(),
+	});
+
+	return schema.validate(activityData);
 };

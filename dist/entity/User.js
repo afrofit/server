@@ -25,12 +25,6 @@ exports.User = void 0;
 const argon2_1 = __importDefault(require("argon2"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const typeorm_1 = require("typeorm");
-const Payment_1 = require("./Payment");
-const StoryChapterPlayed_1 = require("./StoryChapterPlayed");
-const StoryPlayed_1 = require("./StoryPlayed");
-const Subscription_1 = require("./Subscription");
-const UserAchievement_1 = require("./UserAchievement");
-const UserActivityToday_1 = require("./UserActivityToday");
 let User = class User extends typeorm_1.BaseEntity {
     // FUNCTIONS
     hashPassword(password = "") {
@@ -43,12 +37,7 @@ let User = class User extends typeorm_1.BaseEntity {
         const token = jsonwebtoken_1.default.sign({
             id: this.id,
             email: this.email,
-            isPremium: this.isPremium,
-            hasTrial: this.hasTrial,
-            isTrial: this.isTrial,
-            isTrialUntil: this.isTrialUntil,
             isVerified: this.isVerified,
-            isPremiumUntil: this.isPremiumUntil,
             isAdmin: this.isAdmin,
             isRegistered: this.isRegistered,
             username: this.username,
@@ -104,26 +93,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "pushNotificationToken", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], User.prototype, "hasTrial", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isTrial", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "isTrialUntil", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isPremium", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], User.prototype, "isPremiumUntil", void 0);
-__decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isVerified", void 0);
@@ -147,30 +116,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], User.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)(() => UserActivityToday_1.UserActivityToday, (activity) => activity.user),
-    __metadata("design:type", UserActivityToday_1.UserActivityToday)
-], User.prototype, "activityToday", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)((type) => StoryPlayed_1.StoryPlayed, (storyPlayed) => storyPlayed.user),
-    __metadata("design:type", Array)
-], User.prototype, "storiesPlayed", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)((type) => StoryChapterPlayed_1.StoryChapterPlayed, (chapterPlayed) => chapterPlayed.user),
-    __metadata("design:type", Array)
-], User.prototype, "storyChaptersPlayed", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)((type) => Payment_1.Payment, (payment) => payment.user),
-    __metadata("design:type", Array)
-], User.prototype, "payments", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => Subscription_1.Subscription, (sub) => sub.user),
-    __metadata("design:type", Array)
-], User.prototype, "subscriptions", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)((type) => UserAchievement_1.UserAchievement, (userAchievement) => userAchievement.user),
-    __metadata("design:type", Array)
-], User.prototype, "achievements", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),

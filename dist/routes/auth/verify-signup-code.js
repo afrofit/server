@@ -18,27 +18,31 @@ const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const User_1 = require("../../entity/User");
 const validate_responses_1 = require("../../util/validate-responses");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.verifySignupCodeRouter = router;
 router.put("/api/users/verify-signup-code", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateVerifyEmail)(req.body);
     if (error)
-        return res.status(400).send(error.details[0].message);
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     let user = yield User_1.User.findOne(req.currentUser.id);
     if (!user)
-        return res.status(400).send("No such user.");
+        return res.status(status_codes_1.STATUS_CODE.UNAUTHORIZED).send("No such user.");
     if (user.isVerified)
-        return res.status(400).send("User already verified.");
+        return res.status(status_codes_1.STATUS_CODE.NOT_ALLOWED).send("User already verified.");
     if (req.body.code !== user.code)
-        return res.status(400).send("Invalid Code.");
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send("Invalid Code.");
     try {
         user.isVerified = true;
         user.code = 0;
         yield user.save();
         const token = user.generateToken();
-        return res.header(process.env.CUSTOM_TOKEN_HEADER, token).send(token);
+        return res
+            .status(status_codes_1.STATUS_CODE.OK)
+            .header(process.env.CUSTOM_TOKEN_HEADER, token)
+            .send(token);
     }
     catch (error) {
         console.error(error);

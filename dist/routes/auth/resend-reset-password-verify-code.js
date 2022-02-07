@@ -18,23 +18,25 @@ const isReactivatable_1 = require("../../middleware/isReactivatable");
 const User_1 = require("../../entity/User");
 const generate_code_1 = require("../../util/generate-code");
 const validate_responses_1 = require("../../util/validate-responses");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.resendResetPasswordVerifyCode = router;
 router.post("/api/users/resend-reset-password-verify-code", [isReactivatable_1.isReactivatable], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.User.findOne({ email: req.body.email });
     if (!user)
-        return res.status(400).send("User does not exist.");
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send("User does not exist.");
     const { error } = (0, validate_responses_1.validateEmailResetCode)(req.body);
     if (error)
-        return res.status(400).send(error.details[0].message);
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     const newCode = (0, generate_code_1.generateCode)();
     try {
         user.code = newCode;
-        // user.password = "";
         yield user.save();
         console.log("Resent Verify Email Code: ", user.code);
-        //Send Email to User Here
-        return res.json({ success: true });
+        /**
+         * Trigger E-Mail Send Here
+         */
+        return res.status(status_codes_1.STATUS_CODE.CREATED).json({ success: true });
     }
     catch (error) {
         console.error(error);

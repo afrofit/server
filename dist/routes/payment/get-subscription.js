@@ -18,33 +18,60 @@ const Subscription_1 = require("../../entity/Subscription");
 const User_1 = require("../../entity/User");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
-const calculators_1 = require("../../util/calculators");
+const SubscriptionPayment_1 = require("../../entity/SubscriptionPayment");
+const Payment_1 = require("../../entity/Payment");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.getSubscriptionRouter = router;
 router.get("/api/subscription/get-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
-        return res.status(400).send("Sorry! Something went wrong.");
-    let currentSub = yield Subscription_1.Subscription.findOne({
-        subscriberId: req.currentUser.id,
-        isExpired: false,
-    });
-    if (!currentSub)
-        return res.send(null);
-    // Check to see if the endDate is elapsed --
-    // if true, set isExpired to true return null.
+        return res
+            .status(status_codes_1.STATUS_CODE.NOT_ALLOWED)
+            .send("Sorry! Something went wrong.");
+    const TODAY = new Date();
     try {
-        const TODAY = new Date();
-        const END_DATE = (0, calculators_1.calculateSubscriptionEndDate)(currentSub.createdAt, currentSub.durationInDays);
-        if (TODAY > END_DATE) {
-            currentSub.isExpired = true;
-            //You can trigger an email here
-            //check logic for three days to expiration and
-            //one week to so as to remind client to renew
+        let subscriptionsArray = yield Subscription_1.Subscription.find({
+            where: { userId: req.currentUser.id },
+            order: { createdAt: "DESC" },
+        });
+        if (!subscriptionsArray || !subscriptionsArray.length)
+            return res.status(status_codes_1.STATUS_CODE.NO_CONTENT).send(null);
+        const latestSubscription = subscriptionsArray[0];
+        if (new Date(latestSubscription.endDate) < TODAY) {
+            latestSubscription.isExpired = true;
+            yield latestSubscription.save();
+            // Find payment and jointable here and mark payment as expired too
+            const paymentSubscriptionJoinTable = yield SubscriptionPayment_1.SubscriptionPayment.findOne({
+                where: { userId: user.id, subscriptionId: latestSubscription.id },
+            });
+            if (!paymentSubscriptionJoinTable)
+                return res
+                    .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                    .send("This subscription doesn't exist or is expired!");
+            const currentPayment = yield Payment_1.Payment.findOne({
+                isActive: true,
+                userId: user.id,
+                id: paymentSubscriptionJoinTable.paymentId,
+            });
+            if (!currentPayment)
+                return res
+                    .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                    .send("This payment doesn't exist or is expired!");
+            latestSubscription.isExpired = true;
+            currentPayment.isActive = false;
+            yield currentPayment.save();
+            return res.status(status_codes_1.STATUS_CODE.NO_CONTENT).send(null);
         }
-        return res.status(200).send(currentSub);
+        else if (new Date(latestSubscription.endDate) > TODAY) {
+            return res.status(status_codes_1.STATUS_CODE.OK).send(latestSubscription);
+        }
+        /**
+         * You can constantly check here if subscription is about to end to
+         * Then trigger an email to users alerting them of this
+         */
     }
     catch (error) {
         console.error(error);

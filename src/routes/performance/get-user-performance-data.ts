@@ -5,6 +5,7 @@ import { UserActivityToday } from "../../entity/UserActivityToday";
 import { UserPerformance } from "../../entity/UserPerformance";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
+import { STATUS_CODE } from "../../util/status-codes";
 
 const router = express.Router();
 
@@ -12,10 +13,14 @@ router.get(
 	"/api/performance/get-user-performance-data",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
-		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
+		if (!req.currentUser)
+			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
 
 		let user = await User.findOne({ id: req.currentUser.id });
-		if (!user) return res.status(400).send("Sorry! Something went wrong.");
+		if (!user)
+			return res
+				.status(STATUS_CODE.BAD_REQUEST)
+				.send("Sorry! Something went wrong.");
 
 		const NOW = new Date();
 
@@ -30,12 +35,11 @@ router.get(
 
 			if (!userPerformanceData) {
 				userPerformanceData = await UserPerformance.create({
-					user,
-					// userId: user.id,
+					userId: user.id,
 				}).save();
 			}
 
-			return res.status(200).send(userPerformanceData);
+			return res.status(STATUS_CODE.OK).send(userPerformanceData);
 		} catch (error) {
 			console.error(error);
 		}

@@ -1,15 +1,15 @@
+import { formatISO, addDays } from "date-fns";
 import express, { Request, Response } from "express";
 import _ from "lodash";
+import { createSubscription } from "../../controllers/create-subscription";
 import { Payment } from "../../entity/Payment";
 import { Subscription } from "../../entity/Subscription";
+import { SubscriptionPayment } from "../../entity/SubscriptionPayment";
 import { User } from "../../entity/User";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
-import {
-	calculatePrices,
-	calculateSubscriptionDuration,
-	calculateSubscriptionEndDate,
-} from "../../util/calculators";
+import { calculateSubscriptionDuration } from "../../util/calculators";
+import { STATUS_CODE } from "../../util/status-codes";
 import { validateSubscriptionData } from "../../util/validate-responses";
 
 const router = express.Router();
@@ -20,93 +20,104 @@ router.post(
 	async (req: Request, res: Response) => {
 		const { subscriptionData } = req.body;
 
-		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
+		if (!req.currentUser)
+			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
 
 		const { error } = validateSubscriptionData(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		let user = await User.findOne({ email: req.currentUser.email });
-		if (!user) return res.status(400).send("Sorry! Something went wrong.");
+		if (!user)
+			return res
+				.status(STATUS_CODE.INTERNAL_ERROR)
+				.send("Sorry! Something went wrong.");
 
-		// Let's check if user has already used a trial in the past
-		if (subscriptionData === "trial" && !user.hasTrial)
-			return res.status(400).send("Sorry! This user has already used a trial");
+		const TODAY = new Date();
+		const durationInDays = calculateSubscriptionDuration(subscriptionData);
 
 		try {
-			let payment = new Payment();
-			payment.user = user;
-			payment.amountInGBP = calculatePrices(subscriptionData);
+			// 1. Is there an existing subscription?
+			let existingSubscription;
 
-			const subscription = await Subscription.create({
-				name: subscriptionData,
-				durationInDays: calculateSubscriptionDuration(subscriptionData),
-				user,
-				payment,
-				subscriberId: user.id,
-			}).save();
-
-			const subscriptionEndDate = subscription.calculateEndDate();
-			subscription.endDate = subscriptionEndDate;
-			await subscription.save();
-
-			if (subscriptionData !== "trial") {
-				user.isPremium = true;
-				user.isPremiumUntil = subscriptionEndDate;
-				user.isTrial = false;
-				user.isTrialUntil = "";
-				await user.save();
-			} else {
-				user.isTrial = true;
-				user.hasTrial = false;
-				user.isTrialUntil = subscriptionEndDate;
-				user.isPremium = false;
-				user.isPremiumUntil = "";
-				await user.save();
-			}
-
-			console.log("Regular Subber", {
-				...subscription,
-				amountInGBP: subscription.payment.amountInGBP,
-				user: subscription.user.id,
+			const existingSubscriptionList = await Subscription.find({
+				where: { userId: user.id },
+				order: { createdAt: "DESC" },
 			});
 
-			if (!subscription) {
-				return res
-					.status(503)
-					.send("Could not create a subscription. Try again.");
+			existingSubscription = existingSubscriptionList[0];
+
+			if (
+				existingSubscription &&
+				!existingSubscription.isExpired &&
+				new Date(existingSubscription.endDate) < TODAY
+			) {
+				// 2. If YES, is it PAST due? THEN set it as expired and GO TO STEP 4
+				existingSubscription.isExpired = true;
+				await existingSubscription.save();
+
+				const existingSubPayJoinTable = await SubscriptionPayment.findOne({
+					where: { userId: user.id, subscriptionId: existingSubscription.id },
+				});
+
+				if (existingSubPayJoinTable) {
+					const existingPayment = await Payment.findOne({
+						where: { userId: user.id, id: existingSubPayJoinTable.paymentId },
+					});
+
+					if (existingPayment) {
+						existingPayment.isActive = false;
+						await existingPayment.save();
+					}
+				}
+				const response = await createSubscription(
+					subscriptionData,
+					durationInDays,
+					user.id
+				);
+
+				return res.status(STATUS_CODE.CREATED).send(response);
+			} else if (
+				existingSubscription &&
+				!existingSubscription.isExpired &&
+				new Date(existingSubscription.endDate) > TODAY
+			) {
+				// 3. If NO, meaning its still valid, return it with extra freshSubscription field
+				const response = {
+					isExpired: existingSubscription.isExpired,
+					id: existingSubscription.id,
+					userId: user.id,
+					name: existingSubscription.name,
+					durationInDays: existingSubscription.durationInDays,
+					startDate: existingSubscription.createdAt,
+					endDate: existingSubscription.endDate,
+					freshSubscription: false,
+				};
+				return res.status(STATUS_CODE.OK).send(response);
+			} else if (existingSubscription && existingSubscription.isExpired) {
+				// 3. If NO, meaning its still valid, return it with extra freshSubscription field
+				const response = await createSubscription(
+					subscriptionData,
+					durationInDays,
+					user.id
+				);
+
+				return res.status(STATUS_CODE.OK).send(response);
+			} else if (!existingSubscription) {
+				// 4. If there's no existing subscription, then create a new one and send it
+
+				const response = await createSubscription(
+					subscriptionData,
+					durationInDays,
+					user.id
+				);
+
+				return res.status(STATUS_CODE.CREATED).send(response);
 			}
-
-			payment.subscription = subscription;
-			await payment.save();
-			if (!payment) return res.status(401).send("Payment failed");
-
-			// console.log("Subscription", subscription);
-			// console.log("Payment", payment);
-
-			const response = {
-				paymentId: payment.id,
-				isExpired: subscription.isExpired,
-				id: subscription.id,
-				userId: subscription.user.id,
-				amountInGBP: subscription.payment.amountInGBP,
-				name: subscription.name,
-				durationInDays: subscription.durationInDays,
-				startDate: subscription.createdAt,
-				endDate: calculateSubscriptionEndDate(
-					subscription.createdAt,
-					subscription.durationInDays
-				),
-			};
-
-			const token = user.generateToken();
-
-			return res
-				.header(process.env.CUSTOM_TOKEN_HEADER!, token)
-				.send({ token: token, response: response });
 		} catch (error) {
 			console.error(error);
+			return res.status(STATUS_CODE.INTERNAL_ERROR).send({});
 		}
-		return res.send({});
 	}
 );
 

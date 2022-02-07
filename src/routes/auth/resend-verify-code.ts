@@ -6,6 +6,7 @@ import { generateCode } from "../../util/generate-code";
 import { validateEmailResetCode } from "../../util/validate-responses";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
+import { STATUS_CODE } from "../../util/status-codes";
 
 const router = express.Router();
 
@@ -14,10 +15,12 @@ router.post(
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const user = await User.findOne({ email: req.body.email });
-		if (!user) return res.status(400).send("User does not exist.");
+		if (!user)
+			return res.status(STATUS_CODE.UNAUTHORIZED).send("User does not exist.");
 
 		const { error } = validateEmailResetCode(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		const newCode = generateCode();
 
@@ -29,7 +32,7 @@ router.post(
 
 			//Send Email to User Here
 
-			return res.json({ success: true });
+			return res.status(STATUS_CODE.OK).json({ success: true });
 		} catch (error) {
 			console.error(error);
 		}

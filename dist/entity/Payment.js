@@ -11,8 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Payment = void 0;
 const typeorm_1 = require("typeorm");
-const Subscription_1 = require("./Subscription");
-const User_1 = require("./User");
 let Payment = class Payment extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -24,6 +22,14 @@ __decorate([
     __metadata("design:type", Number)
 ], Payment.prototype, "amountInGBP", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Payment.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], Payment.prototype, "isActive", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
 ], Payment.prototype, "createdAt", void 0);
@@ -31,14 +37,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], Payment.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)((type) => User_1.User, (user) => user.payments),
-    __metadata("design:type", User_1.User)
-], Payment.prototype, "user", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => Subscription_1.Subscription, (sub) => sub.payment),
-    __metadata("design:type", Subscription_1.Subscription)
-], Payment.prototype, "subscription", void 0);
 Payment = __decorate([
     (0, typeorm_1.Entity)()
 ], Payment);

@@ -1,10 +1,12 @@
 import { Response, Request, NextFunction } from "express";
+import { STATUS_CODE } from "../util/status-codes";
 
 export const isCurrentUser = (
-  req: Request,
-  res: Response,
-  next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) => {
-  if (!req.currentUser!) return res.status(403).send("Access forbidden.");
-  next();
+	if (!req.currentUser!)
+		return res.status(STATUS_CODE.FORBIDDEN).send("Access forbidden.");
+	next();
 };

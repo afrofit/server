@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
 import _ from "lodash";
-import { Payment } from "../../entity/Payment";
-import { Subscription } from "../../entity/Subscription";
+import { LessThan, MoreThan } from "typeorm";
+import { endOfToday, startOfToday } from "date-fns";
+
 import { User } from "../../entity/User";
+import { UserActivityToday } from "../../entity/UserActivityToday";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
-import {
-	calculatePrices,
-	calculateSubscriptionDuration,
-	calculateSubscriptionEndDate,
-} from "../../util/calculators";
-import { validateSubscriptionData } from "../../util/validate-responses";
+import { validateActivityData } from "../../util/validate-responses";
+import { UserPerformance } from "../../entity/UserPerformance";
+import { ActiveDay } from "../../entity/ActiveDay";
+import { STATUS_CODE } from "../../util/status-codes";
 
 const router = express.Router();
 
@@ -18,99 +18,76 @@ router.post(
 	"/api/performance/save-user-activity",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
-		const { subscriptionData } = req.body;
+		const { activityData } = req.body;
 
-		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
+		if (!req.currentUser)
+			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
 
-		const { error } = validateSubscriptionData(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		const { error } = validateActivityData(req.body);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		let user = await User.findOne({ email: req.currentUser.email });
-		if (!user) return res.status(400).send("Sorry! Something went wrong.");
-
-		// First save the daily activity... find out if it exists
-		// if it doesn't return an error
-		// if it does and is not expired, the save it
-		// if it is expired, then create a new one
-		// Find the userperformance data
-		// update it
-		// if it doesn't exist, then throw an error
-
-		// Let's check if user has already used a trial in the past
-		if (subscriptionData === "trial" && !user.hasTrial)
-			return res.status(400).send("Sorry! This user has already used a trial");
+		if (!user)
+			return res
+				.status(STATUS_CODE.UNAUTHORIZED)
+				.send("Sorry! Something went wrong.");
 
 		try {
-			let payment = new Payment();
-			payment.user = user;
-			payment.amountInGBP = calculatePrices(subscriptionData);
-
-			const subscription = await Subscription.create({
-				name: subscriptionData,
-				durationInDays: calculateSubscriptionDuration(subscriptionData),
-				user,
-				payment,
-				subscriberId: user.id,
-			}).save();
-
-			const subscriptionEndDate = subscription.calculateEndDate();
-			subscription.endDate = subscriptionEndDate;
-			await subscription.save();
-
-			if (subscriptionData !== "trial") {
-				user.isPremium = true;
-				user.isPremiumUntil = subscriptionEndDate;
-				user.isTrial = false;
-				user.isTrialUntil = "";
-				await user.save();
-			} else {
-				user.isTrial = true;
-				user.hasTrial = false;
-				user.isTrialUntil = subscriptionEndDate;
-				user.isPremium = false;
-				user.isPremiumUntil = "";
-				await user.save();
-			}
-
-			console.log("Regular Subber", {
-				...subscription,
-				amountInGBP: subscription.payment.amountInGBP,
-				user: subscription.user.id,
+			const userDailyActivity = await UserActivityToday.findOne({
+				where: {
+					userId: user.id,
+					dayEndTime: LessThan(endOfToday),
+					dayStartTime: MoreThan(startOfToday),
+				},
 			});
 
-			if (!subscription) {
+			if (!userDailyActivity)
 				return res
-					.status(503)
-					.send("Could not create a subscription. Try again.");
+					.status(STATUS_CODE.NO_CONTENT)
+					.send("An unexpected error occured");
+
+			userDailyActivity.bodyMoves += activityData.bodyMoves;
+			userDailyActivity.caloriesBurned += activityData.caloriesBurned;
+
+			await userDailyActivity.save();
+
+			const userPerformanceData = await UserPerformance.findOne({
+				where: {
+					userId: user.id,
+				},
+			});
+
+			if (!userPerformanceData)
+				return res
+					.status(STATUS_CODE.NO_CONTENT)
+					.send("An unexpected error occured");
+
+			userPerformanceData.totalBodyMoves += activityData.bodyMoves;
+			userPerformanceData.totalCaloriesBurned += activityData.caloriesBurned;
+			userPerformanceData.totalTimeDancedInMilliseconds +=
+				activityData.totalTimeDancedInMilliseconds;
+
+			let activeDay = await ActiveDay.findOne({
+				where: {
+					userId: user.id,
+					dayEndTime: LessThan(endOfToday),
+					dayStartTime: MoreThan(startOfToday),
+				},
+			});
+
+			if (!activeDay) {
+				const activeDay = await ActiveDay.create({
+					userId: user.id,
+				});
+				userPerformanceData.totalDaysActive += 1;
+				await activeDay.save();
+			} else if (activeDay) {
+				userPerformanceData.totalDaysActive += 0;
 			}
+			await userPerformanceData.save();
 
-			payment.subscription = subscription;
-			await payment.save();
-			if (!payment) return res.status(401).send("Payment failed");
-
-			// console.log("Subscription", subscription);
-			// console.log("Payment", payment);
-
-			const response = {
-				paymentId: payment.id,
-				isExpired: subscription.isExpired,
-				id: subscription.id,
-				userId: subscription.user.id,
-				amountInGBP: subscription.payment.amountInGBP,
-				name: subscription.name,
-				durationInDays: subscription.durationInDays,
-				startDate: subscription.createdAt,
-				endDate: calculateSubscriptionEndDate(
-					subscription.createdAt,
-					subscription.durationInDays
-				),
-			};
-
-			const token = user.generateToken();
-
-			return res
-				.header(process.env.CUSTOM_TOKEN_HEADER!, token)
-				.send({ token: token, response: response });
+			return res.status(STATUS_CODE.OK).send({ success: true });
 		} catch (error) {
 			console.error(error);
 		}

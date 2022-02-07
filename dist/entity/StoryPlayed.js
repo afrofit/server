@@ -11,8 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoryPlayed = void 0;
 const typeorm_1 = require("typeorm");
-const Story_1 = require("./Story");
-const User_1 = require("./User");
 let StoryPlayed = class StoryPlayed extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -22,20 +20,19 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "name", void 0);
+], StoryPlayed.prototype, "userId", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)((type) => Story_1.Story),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", Story_1.Story)
-], StoryPlayed.prototype, "story", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], StoryPlayed.prototype, "totalBodyMoves", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], StoryPlayed.prototype, "completed", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)((type) => User_1.User, (user) => user.storiesPlayed),
-    __metadata("design:type", User_1.User)
-], StoryPlayed.prototype, "user", void 0);
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], StoryPlayed.prototype, "totalUserTimeSpentInMillis", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)

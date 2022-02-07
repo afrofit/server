@@ -4,13 +4,8 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	JoinColumn,
-	OneToOne,
-	ManyToOne,
 	BaseEntity,
 } from "typeorm";
-import { Subscription } from "./Subscription";
-import { User } from "./User";
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -20,15 +15,15 @@ export class Payment extends BaseEntity {
 	@Column()
 	amountInGBP: number;
 
+	@Column()
+	userId: string;
+
+	@Column({ default: true })
+	isActive: boolean;
+
 	@CreateDateColumn()
 	createdAt: string;
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@ManyToOne((type) => User, (user) => user.payments)
-	user: User;
-
-	@OneToOne((type) => Subscription, (sub) => sub.payment)
-	subscription: Subscription;
 }

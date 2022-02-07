@@ -18,14 +18,17 @@ const User_1 = require("../../entity/User");
 const UserPerformance_1 = require("../../entity/UserPerformance");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.getUserPerformanceDataRouter = router;
 router.get("/api/performance/get-user-performance-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
-        return res.status(400).send("Sorry! Something went wrong.");
+        return res
+            .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
+            .send("Sorry! Something went wrong.");
     const NOW = new Date();
     let userPerformanceData;
     try {
@@ -36,11 +39,10 @@ router.get("/api/performance/get-user-performance-data", [isAuth_1.isAuth, isCur
         });
         if (!userPerformanceData) {
             userPerformanceData = yield UserPerformance_1.UserPerformance.create({
-                user,
-                // userId: user.id,
+                userId: user.id,
             }).save();
         }
-        return res.status(200).send(userPerformanceData);
+        return res.status(status_codes_1.STATUS_CODE.OK).send(userPerformanceData);
     }
     catch (error) {
         console.error(error);

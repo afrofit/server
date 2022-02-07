@@ -11,8 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Subscription = exports.SubscriptionDuration = exports.SubscriptionName = void 0;
 const typeorm_1 = require("typeorm");
-const Payment_1 = require("./Payment");
-const User_1 = require("./User");
 var SubscriptionName;
 (function (SubscriptionName) {
     SubscriptionName["TRIAL"] = "trial";
@@ -29,12 +27,6 @@ var SubscriptionDuration;
     SubscriptionDuration[SubscriptionDuration["YEAR"] = 365] = "YEAR";
 })(SubscriptionDuration = exports.SubscriptionDuration || (exports.SubscriptionDuration = {}));
 let Subscription = class Subscription extends typeorm_1.BaseEntity {
-    calculateEndDate() {
-        const date = new Date(this.createdAt);
-        const result = date.setDate(date.getDate() + this.durationInDays);
-        // return `${result}`;
-        return new Date(result).toISOString();
-    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
@@ -59,7 +51,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Subscription.prototype, "subscriberId", void 0);
+], Subscription.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
@@ -73,18 +65,9 @@ __decorate([
     __metadata("design:type", String)
 ], Subscription.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Subscription.prototype, "endDate", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => Payment_1.Payment, (payment) => payment.subscription),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", Payment_1.Payment)
-], Subscription.prototype, "payment", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)((type) => User_1.User, (user) => user.subscriptions),
-    __metadata("design:type", User_1.User)
-], Subscription.prototype, "user", void 0);
 Subscription = __decorate([
     (0, typeorm_1.Entity)()
 ], Subscription);

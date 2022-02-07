@@ -4,10 +4,8 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	OneToMany,
 	BaseEntity,
 } from "typeorm";
-import { UserAchievement } from "./UserAchievement";
 
 @Entity()
 export class Award extends BaseEntity {
@@ -25,10 +23,4 @@ export class Award extends BaseEntity {
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@OneToMany(
-		(type) => UserAchievement,
-		(userAchievement) => userAchievement.user
-	)
-	userAchievements: UserAchievement[];
 }

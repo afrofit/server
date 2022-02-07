@@ -14,91 +14,77 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveUserActivityRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const Payment_1 = require("../../entity/Payment");
-const Subscription_1 = require("../../entity/Subscription");
+const typeorm_1 = require("typeorm");
+const date_fns_1 = require("date-fns");
 const User_1 = require("../../entity/User");
+const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
-const calculators_1 = require("../../util/calculators");
 const validate_responses_1 = require("../../util/validate-responses");
+const UserPerformance_1 = require("../../entity/UserPerformance");
+const ActiveDay_1 = require("../../entity/ActiveDay");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.saveUserActivityRouter = router;
 router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { subscriptionData } = req.body;
+    const { activityData } = req.body;
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
-    const { error } = (0, validate_responses_1.validateSubscriptionData)(req.body);
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
+    const { error } = (0, validate_responses_1.validateActivityData)(req.body);
     if (error)
-        return res.status(400).send(error.details[0].message);
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
     if (!user)
-        return res.status(400).send("Sorry! Something went wrong.");
-    // First save the daily activity... find out if it exists
-    // if it doesn't return an error
-    // if it does and is not expired, the save it
-    // if it is expired, then create a new one
-    // Find the userperformance data
-    // update it
-    // if it doesn't exist, then throw an error
-    // Let's check if user has already used a trial in the past
-    if (subscriptionData === "trial" && !user.hasTrial)
-        return res.status(400).send("Sorry! This user has already used a trial");
-    try {
-        let payment = new Payment_1.Payment();
-        payment.user = user;
-        payment.amountInGBP = (0, calculators_1.calculatePrices)(subscriptionData);
-        const subscription = yield Subscription_1.Subscription.create({
-            name: subscriptionData,
-            durationInDays: (0, calculators_1.calculateSubscriptionDuration)(subscriptionData),
-            user,
-            payment,
-            subscriberId: user.id,
-        }).save();
-        const subscriptionEndDate = subscription.calculateEndDate();
-        subscription.endDate = subscriptionEndDate;
-        yield subscription.save();
-        if (subscriptionData !== "trial") {
-            user.isPremium = true;
-            user.isPremiumUntil = subscriptionEndDate;
-            user.isTrial = false;
-            user.isTrialUntil = "";
-            yield user.save();
-        }
-        else {
-            user.isTrial = true;
-            user.hasTrial = false;
-            user.isTrialUntil = subscriptionEndDate;
-            user.isPremium = false;
-            user.isPremiumUntil = "";
-            yield user.save();
-        }
-        console.log("Regular Subber", Object.assign(Object.assign({}, subscription), { amountInGBP: subscription.payment.amountInGBP, user: subscription.user.id }));
-        if (!subscription) {
-            return res
-                .status(503)
-                .send("Could not create a subscription. Try again.");
-        }
-        payment.subscription = subscription;
-        yield payment.save();
-        if (!payment)
-            return res.status(401).send("Payment failed");
-        // console.log("Subscription", subscription);
-        // console.log("Payment", payment);
-        const response = {
-            paymentId: payment.id,
-            isExpired: subscription.isExpired,
-            id: subscription.id,
-            userId: subscription.user.id,
-            amountInGBP: subscription.payment.amountInGBP,
-            name: subscription.name,
-            durationInDays: subscription.durationInDays,
-            startDate: subscription.createdAt,
-            endDate: (0, calculators_1.calculateSubscriptionEndDate)(subscription.createdAt, subscription.durationInDays),
-        };
-        const token = user.generateToken();
         return res
-            .header(process.env.CUSTOM_TOKEN_HEADER, token)
-            .send({ token: token, response: response });
+            .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
+            .send("Sorry! Something went wrong.");
+    try {
+        const userDailyActivity = yield UserActivityToday_1.UserActivityToday.findOne({
+            where: {
+                userId: user.id,
+                dayEndTime: (0, typeorm_1.LessThan)(date_fns_1.endOfToday),
+                dayStartTime: (0, typeorm_1.MoreThan)(date_fns_1.startOfToday),
+            },
+        });
+        if (!userDailyActivity)
+            return res
+                .status(status_codes_1.STATUS_CODE.NO_CONTENT)
+                .send("An unexpected error occured");
+        userDailyActivity.bodyMoves += activityData.bodyMoves;
+        userDailyActivity.caloriesBurned += activityData.caloriesBurned;
+        yield userDailyActivity.save();
+        const userPerformanceData = yield UserPerformance_1.UserPerformance.findOne({
+            where: {
+                userId: user.id,
+            },
+        });
+        if (!userPerformanceData)
+            return res
+                .status(status_codes_1.STATUS_CODE.NO_CONTENT)
+                .send("An unexpected error occured");
+        userPerformanceData.totalBodyMoves += activityData.bodyMoves;
+        userPerformanceData.totalCaloriesBurned += activityData.caloriesBurned;
+        userPerformanceData.totalTimeDancedInMilliseconds +=
+            activityData.totalTimeDancedInMilliseconds;
+        let activeDay = yield ActiveDay_1.ActiveDay.findOne({
+            where: {
+                userId: user.id,
+                dayEndTime: (0, typeorm_1.LessThan)(date_fns_1.endOfToday),
+                dayStartTime: (0, typeorm_1.MoreThan)(date_fns_1.startOfToday),
+            },
+        });
+        if (!activeDay) {
+            const activeDay = yield ActiveDay_1.ActiveDay.create({
+                userId: user.id,
+            });
+            userPerformanceData.totalDaysActive += 1;
+            yield activeDay.save();
+        }
+        else if (activeDay) {
+            userPerformanceData.totalDaysActive += 0;
+        }
+        yield userPerformanceData.save();
+        return res.status(status_codes_1.STATUS_CODE.OK).send({ success: true });
     }
     catch (error) {
         console.error(error);

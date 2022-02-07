@@ -20,19 +20,22 @@ const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const UserPerformance_1 = require("../../entity/UserPerformance");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
+const status_codes_1 = require("../../util/status-codes");
 const validate_responses_1 = require("../../util/validate-responses");
 const router = express_1.default.Router();
 exports.updateUserDailyActivityRouter = router;
 router.post("/api/performance/update-user-daily-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateUserActivityToday)(req.body);
     if (error)
-        return res.status(400).send(error.details[0].message);
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     const { bodyMoves, caloriesBurned, totalDaysActive, timeDanced } = req.body;
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
-        return res.status(400).send("Sorry! Something went wrong.");
+        return res
+            .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
+            .send("Sorry! Something went wrong.");
     const NOW = new Date();
     let userActivityToday;
     let overallUserPerformance;
@@ -45,7 +48,9 @@ router.post("/api/performance/update-user-daily-activity", [isAuth_1.isAuth, isC
             },
         });
         if (!userActivityToday) {
-            userActivityToday = yield UserActivityToday_1.UserActivityToday.create({}).save();
+            userActivityToday = yield UserActivityToday_1.UserActivityToday.create({
+                userId: user.id,
+            }).save();
         }
         userActivityToday.bodyMoves + bodyMoves;
         userActivityToday.caloriesBurned + caloriesBurned;
@@ -58,7 +63,9 @@ router.post("/api/performance/update-user-daily-activity", [isAuth_1.isAuth, isC
         });
         // Need logic to calculate total days active
         if (!overallUserPerformance) {
-            overallUserPerformance = yield UserPerformance_1.UserPerformance.create().save();
+            overallUserPerformance = yield UserPerformance_1.UserPerformance.create({
+                userId: user.id,
+            }).save();
         }
         else if (overallUserPerformance) {
             overallUserPerformance.totalBodyMoves += bodyMoves;

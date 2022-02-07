@@ -5,6 +5,7 @@ import { isReactivatable } from "../../middleware/isReactivatable";
 import { User } from "../../entity/User";
 import { generateCode } from "../../util/generate-code";
 import { validateEmailResetCode } from "../../util/validate-responses";
+import { STATUS_CODE } from "../../util/status-codes";
 
 const router = express.Router();
 
@@ -13,23 +14,26 @@ router.post(
 	[isReactivatable],
 	async (req: Request, res: Response) => {
 		const user = await User.findOne({ email: req.body.email });
-		if (!user) return res.status(400).send("User does not exist.");
+		if (!user)
+			return res.status(STATUS_CODE.BAD_REQUEST).send("User does not exist.");
 
 		const { error } = validateEmailResetCode(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		const newCode = generateCode();
 
 		try {
 			user.code = newCode;
-			// user.password = "";
 			await user.save();
 
 			console.log("Resent Verify Email Code: ", user.code);
 
-			//Send Email to User Here
+			/**
+			 * Trigger E-Mail Send Here
+			 */
 
-			return res.json({ success: true });
+			return res.status(STATUS_CODE.CREATED).json({ success: true });
 		} catch (error) {
 			console.error(error);
 		}

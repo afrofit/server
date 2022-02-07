@@ -3,14 +3,11 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 	Column,
-	OneToOne,
-	JoinColumn,
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
 	BeforeInsert,
 } from "typeorm";
-import { User } from "./User";
 
 @Entity()
 export class UserActivityToday extends BaseEntity {
@@ -37,10 +34,6 @@ export class UserActivityToday extends BaseEntity {
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@OneToOne((type) => User, (user) => user.activityToday)
-	@JoinColumn()
-	user: User;
 
 	@BeforeInsert()
 	setDates(): void {

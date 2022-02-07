@@ -4,15 +4,9 @@ import {
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	OneToMany,
 	BaseEntity,
-	JoinColumn,
-	OneToOne,
-	ManyToOne,
 	BeforeInsert,
 } from "typeorm";
-import { Payment } from "./Payment";
-import { User } from "./User";
 
 export enum SubscriptionName {
 	TRIAL = "trial",
@@ -51,10 +45,7 @@ export class Subscription extends BaseEntity {
 	durationInDays: number;
 
 	@Column()
-	subscriberId: string;
-
-	// @Column()
-	// paymentId: string;
+	userId: string;
 
 	@Column({ default: false })
 	isExpired: boolean;
@@ -65,20 +56,6 @@ export class Subscription extends BaseEntity {
 	@UpdateDateColumn()
 	updatedAt: string;
 
-	@Column({ nullable: true })
+	@Column()
 	endDate: string;
-
-	@OneToOne((type) => Payment, (payment) => payment.subscription)
-	@JoinColumn()
-	payment: Payment;
-
-	@ManyToOne((type) => User, (user) => user.subscriptions)
-	user: User;
-
-	calculateEndDate(): string {
-		const date: Date = new Date(this.createdAt);
-		const result: number = date.setDate(date.getDate() + this.durationInDays);
-		// return `${result}`;
-		return new Date(result).toISOString();
-	}
 }

@@ -14,49 +14,57 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expireSubscriptionRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const Payment_1 = require("../../entity/Payment");
 const Subscription_1 = require("../../entity/Subscription");
+const SubscriptionPayment_1 = require("../../entity/SubscriptionPayment");
 const User_1 = require("../../entity/User");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.expireSubscriptionRouter = router;
-router.post("/api/subscription/expire-subscription", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/api/subscription/expire-subscription/", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { subscriptionId } = req.body;
-    console.log("Expired Subscription Req Body", req.body);
-    console.log("Expired Subscription Sub ID", subscriptionId);
     if (!req.currentUser)
-        return res.status(403).send("Access Forbidden.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     //Find a user from the header token here
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
     console.log("Did we find a User?", user.id);
     if (!user)
-        return res.status(400).send("That's an illegal action.");
-    let currentSub = yield Subscription_1.Subscription.findOne({
-        isExpired: false,
-        subscriberId: user.id,
+        return res
+            .status(status_codes_1.STATUS_CODE.NOT_ALLOWED)
+            .send("That's an illegal action.");
+    const currentSub = yield Subscription_1.Subscription.findOne({
+        userId: user.id,
         id: subscriptionId,
     });
-    console.log("Did we find a Current Subsciption Object?", currentSub);
     if (!currentSub)
         return res
-            .status(400)
+            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
             .send("This subscription doesn't exist or is expired!");
-    // console.log(currentSub);
+    const paymentSubscriptionJoinTable = yield SubscriptionPayment_1.SubscriptionPayment.findOne({
+        where: { userId: user.id, subscriptionId: currentSub.id },
+    });
+    if (!paymentSubscriptionJoinTable)
+        return res
+            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+            .send("This subscription doesn't exist or is expired!");
+    const currentPayment = yield Payment_1.Payment.findOne({
+        userId: user.id,
+        id: paymentSubscriptionJoinTable.paymentId,
+    });
+    if (!currentPayment)
+        return res
+            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+            .send("This payment doesn't exist or is expired!");
     try {
         currentSub.isExpired = true;
+        currentPayment.isActive = false;
         yield currentSub.save();
-        user.hasTrial = false;
-        user.isTrial = false;
-        user.isPremium = false;
-        user.isPremiumUntil = "";
-        user.isTrialUntil = "";
-        yield user.save();
+        yield currentPayment.save();
     }
     catch (error) {
         console.error(error);
     }
-    const token = user.generateToken();
-    return res
-        .header(process.env.CUSTOM_TOKEN_HEADER, token)
-        .send({ token: token, response: currentSub });
+    return res.status(status_codes_1.STATUS_CODE.OK).send(currentSub);
 }));

@@ -5,6 +5,7 @@ import { UserActivityToday } from "../../entity/UserActivityToday";
 import { UserPerformance } from "../../entity/UserPerformance";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
+import { STATUS_CODE } from "../../util/status-codes";
 import { validateUserActivityToday } from "../../util/validate-responses";
 
 const router = express.Router();
@@ -13,14 +14,19 @@ router.post(
 	"/api/performance/update-user-daily-activity",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
-		if (!req.currentUser) return res.status(403).send("Access Forbidden.");
+		if (!req.currentUser)
+			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
 		const { error } = validateUserActivityToday(req.body);
-		if (error) return res.status(400).send(error.details[0].message);
+		if (error)
+			return res.status(STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
 
 		const { bodyMoves, caloriesBurned, totalDaysActive, timeDanced } = req.body;
 
 		let user = await User.findOne({ id: req.currentUser.id });
-		if (!user) return res.status(400).send("Sorry! Something went wrong.");
+		if (!user)
+			return res
+				.status(STATUS_CODE.UNAUTHORIZED)
+				.send("Sorry! Something went wrong.");
 
 		const NOW = new Date();
 
@@ -37,7 +43,9 @@ router.post(
 			});
 
 			if (!userActivityToday) {
-				userActivityToday = await UserActivityToday.create({}).save();
+				userActivityToday = await UserActivityToday.create({
+					userId: user.id,
+				}).save();
 			}
 
 			userActivityToday.bodyMoves + bodyMoves;
@@ -55,7 +63,9 @@ router.post(
 			// Need logic to calculate total days active
 
 			if (!overallUserPerformance) {
-				overallUserPerformance = await UserPerformance.create().save();
+				overallUserPerformance = await UserPerformance.create({
+					userId: user.id,
+				}).save();
 			} else if (overallUserPerformance) {
 				overallUserPerformance.totalBodyMoves += bodyMoves;
 				overallUserPerformance.totalCaloriesBurned += caloriesBurned;

@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { STATUS_CODE } from "../util/status-codes";
 
 export interface ReactivatedUserPayload {
 	id: string;
@@ -22,7 +23,10 @@ export const isReactivatable = (
 	next: NextFunction
 ) => {
 	const resetToken = req.header(process.env.CUSTOM_RESET_TOKEN_HEADER!);
-	if (!resetToken) return res.status(401).send("Provide Valid Reset Token.");
+	if (!resetToken)
+		return res
+			.status(STATUS_CODE.UNAUTHORIZED)
+			.send("Provide Valid Reset Token.");
 
 	try {
 		const decoded = jwt.verify(
@@ -32,6 +36,6 @@ export const isReactivatable = (
 		req.returningUser = decoded;
 		next();
 	} catch (error) {
-		res.status(400).send("Invalid Reset Token provided.");
+		res.status(STATUS_CODE.BAD_REQUEST).send("Invalid Reset Token provided.");
 	}
 };

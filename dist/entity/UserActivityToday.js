@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserActivityToday = void 0;
 const date_fns_1 = require("date-fns");
 const typeorm_1 = require("typeorm");
-const User_1 = require("./User");
 let UserActivityToday = class UserActivityToday extends typeorm_1.BaseEntity {
     setDates() {
         this.dayStartTime = (0, date_fns_1.startOfToday)();
@@ -51,11 +50,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
 ], UserActivityToday.prototype, "updatedAt", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)((type) => User_1.User, (user) => user.activityToday),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", User_1.User)
-], UserActivityToday.prototype, "user", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),

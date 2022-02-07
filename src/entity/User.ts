@@ -4,20 +4,11 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 	Column,
-	OneToOne,
-	OneToMany,
 	CreateDateColumn,
 	UpdateDateColumn,
 	BaseEntity,
 	BeforeInsert,
 } from "typeorm";
-import { Payment } from "./Payment";
-import { StoryChapterPlayed } from "./StoryChapterPlayed";
-import { StoryPlayed } from "./StoryPlayed";
-import { Subscription } from "./Subscription";
-import { UserAchievement } from "./UserAchievement";
-import { UserActivityToday } from "./UserActivityToday";
-import { UserPerformance } from "./UserPerformance";
 
 @Entity()
 export class User extends BaseEntity {
@@ -42,21 +33,6 @@ export class User extends BaseEntity {
 	@Column({ nullable: true })
 	pushNotificationToken: string;
 
-	@Column({ default: true })
-	hasTrial: boolean;
-
-	@Column({ default: false })
-	isTrial: boolean;
-
-	@Column({ nullable: true })
-	isTrialUntil: string;
-
-	@Column({ default: false })
-	isPremium: boolean;
-
-	@Column({ nullable: true })
-	isPremiumUntil: string;
-
 	@Column({ default: false })
 	isVerified: boolean;
 
@@ -74,38 +50,6 @@ export class User extends BaseEntity {
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	// RELATIONS
-
-	@OneToOne(
-		() => UserActivityToday,
-		(activity: UserActivityToday) => activity.user
-	)
-	activityToday: UserActivityToday;
-
-	// @OneToOne(() => Subscription, (sub: Subscription) => sub.user)
-	// subscription: Subscription;
-
-	@OneToMany((type) => StoryPlayed, (storyPlayed) => storyPlayed.user)
-	storiesPlayed: StoryPlayed[];
-
-	@OneToMany(
-		(type) => StoryChapterPlayed,
-		(chapterPlayed) => chapterPlayed.user
-	)
-	storyChaptersPlayed: StoryChapterPlayed[];
-
-	@OneToMany((type) => Payment, (payment: Payment) => payment.user)
-	payments: Payment[];
-
-	@OneToMany(() => Subscription, (sub: Subscription) => sub.user)
-	subscriptions: Subscription[];
-
-	@OneToMany(
-		(type) => UserAchievement,
-		(userAchievement) => userAchievement.user
-	)
-	achievements: UserAchievement[];
 
 	// FUNCTIONS
 
@@ -125,12 +69,7 @@ export class User extends BaseEntity {
 			{
 				id: this.id,
 				email: this.email,
-				isPremium: this.isPremium,
-				hasTrial: this.hasTrial,
-				isTrial: this.isTrial,
-				isTrialUntil: this.isTrialUntil,
 				isVerified: this.isVerified,
-				isPremiumUntil: this.isPremiumUntil,
 				isAdmin: this.isAdmin,
 				isRegistered: this.isRegistered,
 				username: this.username,

@@ -19,22 +19,23 @@ const generate_code_1 = require("../../util/generate-code");
 const validate_responses_1 = require("../../util/validate-responses");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
+const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
 exports.resendVerifyCode = router;
 router.post("/api/users/resend-verify-code", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.User.findOne({ email: req.body.email });
     if (!user)
-        return res.status(400).send("User does not exist.");
+        return res.status(status_codes_1.STATUS_CODE.UNAUTHORIZED).send("User does not exist.");
     const { error } = (0, validate_responses_1.validateEmailResetCode)(req.body);
     if (error)
-        return res.status(400).send(error.details[0].message);
+        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     const newCode = (0, generate_code_1.generateCode)();
     try {
         user.code = newCode;
         yield user.save();
         console.log("Resent Verify Email Code: ", user.code);
         //Send Email to User Here
-        return res.json({ success: true });
+        return res.status(status_codes_1.STATUS_CODE.OK).json({ success: true });
     }
     catch (error) {
         console.error(error);
