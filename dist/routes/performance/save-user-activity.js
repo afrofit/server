@@ -14,20 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveUserActivityRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const typeorm_1 = require("typeorm");
-const date_fns_1 = require("date-fns");
 const User_1 = require("../../entity/User");
 const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const validate_responses_1 = require("../../util/validate-responses");
 const UserPerformance_1 = require("../../entity/UserPerformance");
-const ActiveDay_1 = require("../../entity/ActiveDay");
 const status_codes_1 = require("../../util/status-codes");
+const controllers_1 = __importDefault(require("./controllers"));
 const router = express_1.default.Router();
 exports.saveUserActivityRouter = router;
 router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { activityData } = req.body;
+    /**
+     * Activity Data needs to have
+     * contentStoryId
+     * contentChapterId
+     */
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateActivityData)(req.body);
@@ -39,55 +42,39 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
             .send("Sorry! Something went wrong.");
     try {
-        const userDailyActivity = yield UserActivityToday_1.UserActivityToday.findOne({
-            where: {
+        let userDailyActivity, userPerformanceData;
+        userDailyActivity = yield controllers_1.default.getUserDailyActivity(user);
+        if (!userDailyActivity) {
+            userDailyActivity = yield UserActivityToday_1.UserActivityToday.create({
                 userId: user.id,
-                dayEndTime: (0, typeorm_1.LessThan)(date_fns_1.endOfToday),
-                dayStartTime: (0, typeorm_1.MoreThan)(date_fns_1.startOfToday),
-            },
-        });
-        if (!userDailyActivity)
-            return res
-                .status(status_codes_1.STATUS_CODE.NO_CONTENT)
-                .send("An unexpected error occured");
-        userDailyActivity.bodyMoves += activityData.bodyMoves;
-        userDailyActivity.caloriesBurned += activityData.caloriesBurned;
-        yield userDailyActivity.save();
-        const userPerformanceData = yield UserPerformance_1.UserPerformance.findOne({
-            where: {
-                userId: user.id,
-            },
-        });
-        if (!userPerformanceData)
-            return res
-                .status(status_codes_1.STATUS_CODE.NO_CONTENT)
-                .send("An unexpected error occured");
-        userPerformanceData.totalBodyMoves += activityData.bodyMoves;
-        userPerformanceData.totalCaloriesBurned += activityData.caloriesBurned;
-        userPerformanceData.totalTimeDancedInMilliseconds +=
-            activityData.totalTimeDancedInMilliseconds;
-        let activeDay = yield ActiveDay_1.ActiveDay.findOne({
-            where: {
-                userId: user.id,
-                dayEndTime: (0, typeorm_1.LessThan)(date_fns_1.endOfToday),
-                dayStartTime: (0, typeorm_1.MoreThan)(date_fns_1.startOfToday),
-            },
-        });
-        if (!activeDay) {
-            const activeDay = yield ActiveDay_1.ActiveDay.create({
-                userId: user.id,
-            });
-            userPerformanceData.totalDaysActive += 1;
-            yield activeDay.save();
+            }).save();
         }
-        else if (activeDay) {
-            userPerformanceData.totalDaysActive += 0;
+        else {
+            userDailyActivity.bodyMoves += activityData.bodyMoves;
+            userDailyActivity.caloriesBurned += activityData.caloriesBurned;
+            yield userDailyActivity.save();
         }
-        yield userPerformanceData.save();
-        return res.status(status_codes_1.STATUS_CODE.OK).send({ success: true });
+        const userActiveDays = yield controllers_1.default.getActiveDays(user);
+        userPerformanceData = yield controllers_1.default.getUserPerformanceData(user);
+        if (!userPerformanceData) {
+            userPerformanceData = yield UserPerformance_1.UserPerformance.create({
+                userId: user.id,
+            }).save();
+        }
+        else {
+            userPerformanceData.totalBodyMoves += activityData.bodyMoves;
+            userPerformanceData.totalCaloriesBurned += activityData.caloriesBurned;
+            userPerformanceData.totalTimeDancedInMilliseconds +=
+                activityData.totalTimeDancedInMilliseconds;
+            userPerformanceData.totalDaysActive = userActiveDays;
+            yield userPerformanceData.save();
+        }
+        return res
+            .status(status_codes_1.STATUS_CODE.OK)
+            .send({ perfomance: userPerformanceData, daily: userDailyActivity });
     }
     catch (error) {
         console.error(error);
+        return res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send(null);
     }
-    return res.send({});
 }));

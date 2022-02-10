@@ -1,16 +1,15 @@
 import express, { Request, Response } from "express";
-import { LessThan, MoreThan } from "typeorm";
+
 import { User } from "../../entity/User";
-import { UserActivityToday } from "../../entity/UserActivityToday";
-import { UserPerformance } from "../../entity/UserPerformance";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
 import { STATUS_CODE } from "../../util/status-codes";
+import performanceControllers from "./controllers";
 
 const router = express.Router();
 
 router.get(
-	"/api/performance/get-user-performance-data",
+	"/api/performance/get-user-activity",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		if (!req.currentUser)
@@ -19,31 +18,23 @@ router.get(
 		let user = await User.findOne({ id: req.currentUser.id });
 		if (!user)
 			return res
-				.status(STATUS_CODE.BAD_REQUEST)
+				.status(STATUS_CODE.UNAUTHORIZED)
 				.send("Sorry! Something went wrong.");
 
-		const NOW = new Date();
-
-		let userPerformanceData;
-
 		try {
-			userPerformanceData = await UserPerformance.findOne({
-				where: {
-					userId: user.id,
-				},
+			const derivedUserActivityToday =
+				await performanceControllers.getUserDailyActivity(user);
+			const derivedUserPerformanceData =
+				await performanceControllers.getUserPerformanceData(user);
+			return res.status(STATUS_CODE.OK).send({
+				performance: derivedUserPerformanceData,
+				daily: derivedUserActivityToday,
 			});
-
-			if (!userPerformanceData) {
-				userPerformanceData = await UserPerformance.create({
-					userId: user.id,
-				}).save();
-			}
-
-			return res.status(STATUS_CODE.OK).send(userPerformanceData);
 		} catch (error) {
 			console.error(error);
+			return res.status(STATUS_CODE.INTERNAL_ERROR).send(null);
 		}
 	}
 );
 
-export { router as getUserPerformanceDataRouter };
+export { router as getUserActivityRouter };

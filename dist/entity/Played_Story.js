@@ -9,43 +9,47 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StoryPlayed = void 0;
+exports.PlayedStory = void 0;
 const typeorm_1 = require("typeorm");
-let StoryPlayed = class StoryPlayed extends typeorm_1.BaseEntity {
+let PlayedStory = class PlayedStory extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "id", void 0);
+], PlayedStory.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "userId", void 0);
+], PlayedStory.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "contentStoryId", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], StoryPlayed.prototype, "totalBodyMoves", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], StoryPlayed.prototype, "completed", void 0);
+], PlayedStory.prototype, "contentStoryId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
-], StoryPlayed.prototype, "totalUserTimeSpentInMillis", void 0);
+], PlayedStory.prototype, "totalBodyMoves", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], PlayedStory.prototype, "totalUserTimeSpentInMillis", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], PlayedStory.prototype, "completed", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], PlayedStory.prototype, "started", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "createdAt", void 0);
+], PlayedStory.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "updatedAt", void 0);
-StoryPlayed = __decorate([
+], PlayedStory.prototype, "updatedAt", void 0);
+PlayedStory = __decorate([
     (0, typeorm_1.Entity)()
-], StoryPlayed);
-exports.StoryPlayed = StoryPlayed;
+], PlayedStory);
+exports.PlayedStory = PlayedStory;

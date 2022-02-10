@@ -9,43 +9,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StoryPlayed = void 0;
+exports.PlayedChapter = void 0;
 const typeorm_1 = require("typeorm");
-let StoryPlayed = class StoryPlayed extends typeorm_1.BaseEntity {
+let PlayedChapter = class PlayedChapter extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "id", void 0);
+], PlayedChapter.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "userId", void 0);
+], PlayedChapter.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "contentStoryId", void 0);
+], PlayedChapter.prototype, "contentChapterId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], StoryPlayed.prototype, "totalBodyMoves", void 0);
+    __metadata("design:type", String)
+], PlayedChapter.prototype, "contentStoryId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], StoryPlayed.prototype, "completed", void 0);
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], PlayedChapter.prototype, "playedStoryId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
-], StoryPlayed.prototype, "totalUserTimeSpentInMillis", void 0);
+], PlayedChapter.prototype, "bodyMoves", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], PlayedChapter.prototype, "completed", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], PlayedChapter.prototype, "started", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], PlayedChapter.prototype, "timeSpentInMillis", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "createdAt", void 0);
+], PlayedChapter.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", String)
-], StoryPlayed.prototype, "updatedAt", void 0);
-StoryPlayed = __decorate([
+], PlayedChapter.prototype, "updatedAt", void 0);
+PlayedChapter = __decorate([
     (0, typeorm_1.Entity)()
-], StoryPlayed);
-exports.StoryPlayed = StoryPlayed;
+], PlayedChapter);
+exports.PlayedChapter = PlayedChapter;

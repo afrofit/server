@@ -32,11 +32,10 @@ const create_subscription_1 = require("./routes/payment/create-subscription");
 const expire_subscription_1 = require("./routes/payment/expire-subscription");
 const get_subscription_1 = require("./routes/payment/get-subscription");
 const create_leaderboard_1 = require("./routes/marathon/create-leaderboard");
-const get_user_daily_activity_1 = require("./routes/performance/get-user-daily-activity");
-const update_user_daily_activity_1 = require("./routes/performance/update-user-daily-activity");
-const get_user_performance_data_1 = require("./routes/performance/get-user-performance-data");
+const get_user_activity_1 = require("./routes/performance/get-user-activity");
 const save_user_activity_1 = require("./routes/performance/save-user-activity");
-const get_stories_content_1 = require("./routes/content/get-stories-content");
+const get_stories_1 = require("./routes/content/get-stories");
+const get_story_detail_1 = require("./routes/content/get-story-detail");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -62,12 +61,11 @@ app.use(get_subscription_1.getSubscriptionRouter);
 //Marathon Routes
 app.use(create_leaderboard_1.createLeaderboardRouter);
 //User Activity Routes
-app.use(get_user_daily_activity_1.getUserDailyActivityRouter);
-app.use(update_user_daily_activity_1.updateUserDailyActivityRouter);
-app.use(get_user_performance_data_1.getUserPerformanceDataRouter);
+app.use(get_user_activity_1.getUserActivityRouter);
 app.use(save_user_activity_1.saveUserActivityRouter);
 //Content Routes
-app.use(get_stories_content_1.getStoriesContentRouter);
+app.use(get_stories_1.getStoriesRouter);
+app.use(get_story_detail_1.getStoryDetailsContentRouter);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });

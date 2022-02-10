@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStoryDetailsContentRouter = void 0;
+exports.getStoriesRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const Played_Story_1 = require("../../entity/Played_Story");
 const User_1 = require("../../entity/User");
@@ -23,39 +23,43 @@ const status_codes_1 = require("../../util/status-codes");
 const mappers_1 = require("./mappers");
 const queries_1 = __importDefault(require("./queries"));
 const router = express_1.default.Router();
-exports.getStoryDetailsContentRouter = router;
-router.get("/api/content/get-story-detail/:storyId", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getStoriesRouter = router;
+router.get("/api/content/get-stories", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    let user = yield User_1.User.findOne({ id: req.currentUser.id });
-    if (!user)
-        return res
-            .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
-            .send("Sorry! Something went wrong.");
-    const { storyId } = req.params;
     try {
-        let storyPlayed;
-        const fetchedStory = yield sanity_client_1.default.fetch(queries_1.default.FETCH_STORY_QUERY(storyId));
-        console.log("Fetched Story", fetchedStory[0]);
-        storyPlayed = yield Played_Story_1.PlayedStory.findOne({
-            where: {
-                userId: user.id,
-                contentStoryId: storyId,
-            },
-        });
-        if (!storyPlayed) {
-            storyPlayed = yield Played_Story_1.PlayedStory.create({
-                userId: user.id,
-                contentStoryId: storyId,
-            }).save();
+        let user = yield User_1.User.findOne({ id: req.currentUser.id });
+        if (!user) {
+            return res
+                .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
+                .send("Sorry! Something went wrong.");
         }
-        const storyDetail = (0, mappers_1.mapStoryResponse)(fetchedStory[0], storyPlayed);
-        console.log("Fetched StoryDetail", storyDetail);
-        return res.status(status_codes_1.STATUS_CODE.OK).send(storyDetail);
+        const fetchedStories = yield sanity_client_1.default.fetch(queries_1.default.FETCH_STORIES_QUERY());
+        if (!fetchedStories)
+            return res.send([]);
+        if (user && fetchedStories && fetchedStories.length) {
+            const newArray = [];
+            yield Promise.all(fetchedStories.map((story) => __awaiter(void 0, void 0, void 0, function* () {
+                const playerData = yield Played_Story_1.PlayedStory.create({
+                    contentStoryId: story._id,
+                    userId: user.id,
+                }).save();
+                newArray.push((0, mappers_1.mapStoryResponse)(story, playerData));
+            })));
+            // console.log("New Array", newArray);
+            return res.status(status_codes_1.STATUS_CODE.OK).send(newArray);
+        }
+        /**
+         * Here we must also fetch array of StoryPlayed
+         * Map an Array that returns objects containing both content and user performance
+         * Then return that array to FE
+         * Since array size is guaranteed to always be < 100,
+         * This shouldn't be too expensive
+         */
     }
     catch (error) {
         console.error(error);
-        res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send(null);
     }
+    return res.send([]);
 }));
 //

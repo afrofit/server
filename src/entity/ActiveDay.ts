@@ -17,21 +17,9 @@ export class ActiveDay extends BaseEntity {
 	@Column()
 	userId: string;
 
-	@Column()
-	dayStartTime: Date;
-
-	@Column()
-	dayEndTime: Date;
-
 	@CreateDateColumn()
 	createdAt: string;
 
 	@UpdateDateColumn()
 	updatedAt: string;
-
-	@BeforeInsert()
-	setDates(): void {
-		this.dayStartTime = startOfToday();
-		this.dayEndTime = endOfToday();
-	}
 }

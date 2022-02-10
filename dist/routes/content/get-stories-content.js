@@ -32,6 +32,13 @@ router.get("/api/content/get-stories-content", [isAuth_1.isAuth, isCurrentUser_1
     let fetchedStories;
     try {
         fetchedStories = yield sanity_client_1.default.fetch(`*[_type=="story"]{_id, title, storyOrderNumber, "thumb": thumbnail.asset->url} | order(storyOrderNumber asc)`);
+        /**
+         * Here we must also fetch array of StoryPlayed
+         * Map an Array that returns objects containing both content and user performance
+         * Then return that array to FE
+         * Since array size is guaranteed to always be < 100,
+         * This shouldn't be too expensive
+         */
         return res.status(status_codes_1.STATUS_CODE.OK).send(fetchedStories) || null;
     }
     catch (error) {

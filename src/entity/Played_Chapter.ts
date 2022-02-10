@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 
 @Entity()
-export class StoryPlayed extends BaseEntity {
+export class PlayedChapter extends BaseEntity {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
@@ -16,13 +16,25 @@ export class StoryPlayed extends BaseEntity {
 	userId: string;
 
 	@Column()
-	totalBodyMoves: number;
+	contentChapterId: string;
+
+	@Column()
+	contentStoryId: string;
+
+	@Column()
+	playedStoryId: string;
+
+	@Column({ default: 0 })
+	bodyMoves: number;
 
 	@Column({ default: false })
 	completed: boolean;
 
+	@Column({ default: false })
+	started: boolean;
+
 	@Column({ default: 0 })
-	totalUserTimeSpentInMillis: number;
+	timeSpentInMillis: number;
 
 	@CreateDateColumn()
 	createdAt: string;

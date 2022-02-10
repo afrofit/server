@@ -1,18 +1,17 @@
 import express, { Request, Response, Router } from "express";
 import { PlayedChapter } from "../../entity/Played_Chapter";
-import { PlayedStory } from "../../entity/Played_Story";
 import { User } from "../../entity/User";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
 import client from "../../util/sanity-client";
 import { STATUS_CODE } from "../../util/status-codes";
-import { mapChapterResponse, mapStoryResponse } from "./mappers";
+import { mapChapterResponse } from "./mappers";
 import queries from "./queries";
 
 const router = express.Router();
 
 router.get(
-	"/api/content/get-story-detail/:storyId",
+	"/api/content/get-chapter-detail/:storyId/:chapterId",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		if (!req.currentUser)
@@ -23,31 +22,38 @@ router.get(
 				.status(STATUS_CODE.BAD_REQUEST)
 				.send("Sorry! Something went wrong.");
 
-		const { storyId } = req.params;
+		const { chapterId, storyId } = req.params;
 
 		try {
-			let storyPlayed;
+			let chapterPlayed;
 
 			const fetchedStory = await client.fetch(
-				queries.FETCH_STORY_QUERY(storyId)
+				queries.FETCH_CHAPTER_QUERY(chapterId)
 			);
-			console.log("Fetched Story", fetchedStory[0]);
-			storyPlayed = await PlayedStory.findOne({
+			// console.log("Fetched Story", fetchedStory);
+			chapterPlayed = await PlayedChapter.findOne({
 				where: {
 					userId: user.id,
-					contentStoryId: storyId,
 				},
 			});
 
-			if (!storyPlayed) {
-				storyPlayed = await PlayedStory.create({
+			if (!chapterPlayed) {
+				chapterPlayed = await PlayedChapter.create({
 					userId: user.id,
-					contentStoryId: storyId,
-				}).save();
+					contentStoryId: "",
+					contentChapterId: "",
+					playedStoryId: "",
+				});
 			}
 
-			const storyDetail = mapStoryResponse(fetchedStory[0], storyPlayed);
-			console.log("Fetched StoryDetail", storyDetail);
+			const storyDetail = mapChapterResponse(fetchedStory, chapterPlayed);
+			/**
+			 * Here we must also fetch array of StoryPlayed
+			 * Map an Array that returns objects containing both content and user performance
+			 * Then return that array to FE
+			 * Since array size is guaranteed to always be < 100,
+			 * This shouldn't be too expensive
+			 */
 
 			return res.status(STATUS_CODE.OK).send(storyDetail);
 		} catch (error) {
@@ -57,6 +63,6 @@ router.get(
 	}
 );
 
-export { router as getStoryDetailsContentRouter };
+export { router as getChapterDetailsContentRouter };
 
 //

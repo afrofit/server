@@ -17,11 +17,10 @@ import { createSubscriptionRouter } from "./routes/payment/create-subscription";
 import { expireSubscriptionRouter } from "./routes/payment/expire-subscription";
 import { getSubscriptionRouter } from "./routes/payment/get-subscription";
 import { createLeaderboardRouter } from "./routes/marathon/create-leaderboard";
-import { getUserDailyActivityRouter } from "./routes/performance/get-user-daily-activity";
-import { updateUserDailyActivityRouter } from "./routes/performance/update-user-daily-activity";
-import { getUserPerformanceDataRouter } from "./routes/performance/get-user-performance-data";
+import { getUserActivityRouter } from "./routes/performance/get-user-activity";
 import { saveUserActivityRouter } from "./routes/performance/save-user-activity";
-import { getStoriesContentRouter } from "./routes/content/get-stories-content";
+import { getStoriesRouter } from "./routes/content/get-stories";
+import { getStoryDetailsContentRouter } from "./routes/content/get-story-detail";
 
 const app = express();
 app.set("trust proxy", true);
@@ -51,13 +50,12 @@ app.use(getSubscriptionRouter);
 app.use(createLeaderboardRouter);
 
 //User Activity Routes
-app.use(getUserDailyActivityRouter);
-app.use(updateUserDailyActivityRouter);
-app.use(getUserPerformanceDataRouter);
+app.use(getUserActivityRouter);
 app.use(saveUserActivityRouter);
 
 //Content Routes
-app.use(getStoriesContentRouter);
+app.use(getStoriesRouter);
+app.use(getStoryDetailsContentRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	return res.send("Welcome to the Afrofit API.");
