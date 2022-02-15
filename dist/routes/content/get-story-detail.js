@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStoryDetailsContentRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const Played_Chapter_1 = require("../../entity/Played_Chapter");
 const Played_Story_1 = require("../../entity/Played_Story");
 const User_1 = require("../../entity/User");
 const isAuth_1 = require("../../middleware/isAuth");
@@ -50,8 +51,26 @@ router.get("/api/content/get-story-detail/:storyId", [isAuth_1.isAuth, isCurrent
             }).save();
         }
         const storyDetail = (0, mappers_1.mapStoryResponse)(fetchedStory[0], storyPlayed);
-        console.log("Fetched StoryDetail", storyDetail);
-        return res.status(status_codes_1.STATUS_CODE.OK).send(storyDetail);
+        const fetchedChapters = yield sanity_client_1.default.fetch(queries_1.default.FETCH_STORY_CHAPTERS_QUERY(fetchedStory[0].storyOrderNumber));
+        console.log("Fetched Story-Detail", storyDetail);
+        if (!fetchedChapters)
+            return res.send([]);
+        if (user && storyPlayed && fetchedChapters && fetchedChapters.length) {
+            const newArray = [];
+            yield Promise.all(fetchedChapters.map((chapter) => __awaiter(void 0, void 0, void 0, function* () {
+                const playerData = yield Played_Chapter_1.PlayedChapter.create({
+                    contentStoryId: fetchedStory[0]._id,
+                    contentChapterId: chapter._id,
+                    playedStoryId: storyPlayed.id,
+                    userId: user.id,
+                }).save();
+                newArray.push((0, mappers_1.mapChapterResponse)(chapter, playerData));
+            })));
+            // console.log("New Array", newArray.reverse());
+            return res
+                .status(status_codes_1.STATUS_CODE.OK)
+                .send({ story: storyDetail, chapters: newArray });
+        }
     }
     catch (error) {
         console.error(error);

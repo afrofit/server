@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import { PlayedChapter } from "../../entity/Played_Chapter";
+import { PlayedStory } from "../../entity/Played_Story";
 import { User } from "../../entity/User";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
@@ -27,26 +28,37 @@ router.get(
 		try {
 			let chapterPlayed;
 
-			const fetchedStory = await client.fetch(
+			const fetchedChapter = await client.fetch(
 				queries.FETCH_CHAPTER_QUERY(chapterId)
 			);
-			// console.log("Fetched Story", fetchedStory);
+			// console.log("Fetched Story", fetchedChapter);
 			chapterPlayed = await PlayedChapter.findOne({
 				where: {
 					userId: user.id,
 				},
 			});
 
+			// Look for playedStory
+			const playedStory = await PlayedStory.findOne({
+				userId: user.id,
+				contentStoryId: storyId,
+			});
+
+			if (!playedStory)
+				return res
+					.status(STATUS_CODE.INTERNAL_ERROR)
+					.send("There was an internal error");
+
 			if (!chapterPlayed) {
 				chapterPlayed = await PlayedChapter.create({
 					userId: user.id,
-					contentStoryId: "",
-					contentChapterId: "",
-					playedStoryId: "",
-				});
+					contentStoryId: storyId,
+					contentChapterId: fetchedChapter[0]._id,
+					playedStoryId: playedStory.id,
+				}).save();
 			}
 
-			const storyDetail = mapChapterResponse(fetchedStory, chapterPlayed);
+			const storyDetail = mapChapterResponse(fetchedChapter[0], chapterPlayed);
 			/**
 			 * Here we must also fetch array of StoryPlayed
 			 * Map an Array that returns objects containing both content and user performance

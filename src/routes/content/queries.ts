@@ -7,6 +7,8 @@ const FETCH_STORY_QUERY = (storyId: string) => {
         instruction,
         "introVideo": introVideo.url,
         "thumb": thumbnail.asset->url,
+        "slug": slug.current,
+        totalTargetUserTimeInMillis
       }`;
 };
 
@@ -17,9 +19,17 @@ const FETCH_CHAPTER_QUERY = (chapterId: string) => {
 };
 
 const FETCH_STORY_CHAPTERS_QUERY = (storyId: string) => {
-	return `*[_type=="chapter && _id="${storyId}"]{
-        ...
-    }`;
+	return `*[_type=="chapter" && storyId==${storyId}]{
+        "audio":audioInstruction.url,
+       _id,
+       "video": video.url,
+       targetBodyMoves,
+       name,
+       instruction,
+       chapterOrder,
+       storyId,    
+       targetTimeInMillis
+       } | order(chapterOrder desc)`;
 };
 
 const FETCH_STORIES_QUERY = () => {

@@ -18,12 +18,6 @@ router.post(
 	async (req: Request, res: Response) => {
 		const { activityData } = req.body;
 
-		/**
-		 * Activity Data needs to have
-		 * contentStoryId
-		 * contentChapterId
-		 */
-
 		if (!req.currentUser)
 			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
 
@@ -72,6 +66,19 @@ router.post(
 
 				await userPerformanceData.save();
 			}
+
+			/**
+			 * Activity Data needs to have
+			 * contentStoryId
+			 * contentChapterId
+			 */
+
+			/**
+			 * Look a Played_Story for this user and contentStoryId
+			 * Look for a Played_Chapter for this user and contentChapterId
+			 * Update them accordingly
+			 * They would have been created when user fetches stories/chapters in the first place
+			 */
 
 			return res
 				.status(STATUS_CODE.OK)

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getChapterDetailsContentRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const Played_Chapter_1 = require("../../entity/Played_Chapter");
+const Played_Story_1 = require("../../entity/Played_Story");
 const User_1 = require("../../entity/User");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
@@ -35,22 +36,31 @@ router.get("/api/content/get-chapter-detail/:storyId/:chapterId", [isAuth_1.isAu
     const { chapterId, storyId } = req.params;
     try {
         let chapterPlayed;
-        const fetchedStory = yield sanity_client_1.default.fetch(queries_1.default.FETCH_CHAPTER_QUERY(chapterId));
-        // console.log("Fetched Story", fetchedStory);
+        const fetchedChapter = yield sanity_client_1.default.fetch(queries_1.default.FETCH_CHAPTER_QUERY(chapterId));
+        // console.log("Fetched Story", fetchedChapter);
         chapterPlayed = yield Played_Chapter_1.PlayedChapter.findOne({
             where: {
                 userId: user.id,
             },
         });
+        // Look for playedStory
+        const playedStory = yield Played_Story_1.PlayedStory.findOne({
+            userId: user.id,
+            contentStoryId: storyId,
+        });
+        if (!playedStory)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("There was an internal error");
         if (!chapterPlayed) {
             chapterPlayed = yield Played_Chapter_1.PlayedChapter.create({
                 userId: user.id,
-                contentStoryId: "",
-                contentChapterId: "",
-                playedStoryId: "",
-            });
+                contentStoryId: storyId,
+                contentChapterId: fetchedChapter[0]._id,
+                playedStoryId: playedStory.id,
+            }).save();
         }
-        const storyDetail = (0, mappers_1.mapChapterResponse)(fetchedStory, chapterPlayed);
+        const storyDetail = (0, mappers_1.mapChapterResponse)(fetchedChapter[0], chapterPlayed);
         /**
          * Here we must also fetch array of StoryPlayed
          * Map an Array that returns objects containing both content and user performance

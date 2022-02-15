@@ -26,11 +26,6 @@ const router = express_1.default.Router();
 exports.saveUserActivityRouter = router;
 router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { activityData } = req.body;
-    /**
-     * Activity Data needs to have
-     * contentStoryId
-     * contentChapterId
-     */
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateActivityData)(req.body);
@@ -69,6 +64,17 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
             userPerformanceData.totalDaysActive = userActiveDays;
             yield userPerformanceData.save();
         }
+        /**
+         * Activity Data needs to have
+         * contentStoryId
+         * contentChapterId
+         */
+        /**
+         * Look a Played_Story for this user and contentStoryId
+         * Look for a Played_Chapter for this user and contentChapterId
+         * Update them accordingly
+         * They would have been created when user fetches stories/chapters in the first place
+         */
         return res
             .status(status_codes_1.STATUS_CODE.OK)
             .send({ perfomance: userPerformanceData, daily: userDailyActivity });

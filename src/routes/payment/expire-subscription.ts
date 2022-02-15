@@ -19,7 +19,6 @@ router.post(
 
 		//Find a user from the header token here
 		let user = await User.findOne({ email: req.currentUser.email });
-		console.log("Did we find a User?", user!.id);
 
 		if (!user)
 			return res

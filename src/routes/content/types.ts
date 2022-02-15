@@ -1,55 +1,65 @@
-export type StoryType = {
+export interface StoryType {
 	_id: string;
-	storyOrderNumber: number;
-	title: string;
-	thumb: string;
-	introVideo?: string;
-	successVideo?: string;
+	description: string;
 	failVideo?: string;
 	finaleVideo?: string;
-	instruction: string;
-};
+	introVideo?: string;
+	storyOrderNumber: number;
+	successVideo?: string;
+	thumb: string;
+	title: string;
+	totalTargetActualBodyMoves: number;
+	totalTargetBodyMoves: number;
+	totalTargetUserTimeInMillis: number;
+}
 
-export type ChapterType = {
+export interface ChapterType {
 	_id: string;
+	actualTargetBodyMoves: number;
 	audioUrl: string;
-	videoUrl: string;
-	chapterOrderNumber: number;
-	name: string;
-	instruction: string;
-	targetBodyMoves: number;
-	storyId: string;
-};
-
-export type ChapterResponse = {
-	contentStoryId: string;
-	contentChapterId: string;
-	contentChapterName: string;
-	audioUrl: string;
-	videoUrl: string;
-	targetBodyMoves: number;
 	chapterOrder: number;
 	instruction: string;
-	chapterPlayed: string;
-	completed: boolean;
-	started: boolean;
-	timeSpentInMillis: number;
-	bodyMoves: number;
-};
+	name: string;
+	storyId: string;
+	targetBodyMoves: number;
+	targetTimeInMillis: number;
+	videoUrl: string;
+}
 
-export type StoryResponse = {
-	contentStoryId: string;
-	title: string;
-	storyOrderNumber: number;
-	thumb: string;
-	totalBodyMoves: number;
-	totalUserTimeSpentInMillis: number;
+export interface ChapterResponse extends Omit<ChapterType, "_id"> {
+	actualTargetBodyMoves: number;
+	audioUrl: string;
+	bodyMoves: number;
 	completed: boolean;
+	contentChapterId: string;
+	contentChapterName: string;
+	contentStoryId: string;
+	chapterOrder: number;
+	chapterPlayed: string;
+	instruction: string;
 	started: boolean;
-	storyPlayedId: string;
-	introVideo?: string;
-	successVideo?: string;
+	targetBodyMoves: number;
+	targetTimeInMillis: number;
+	timeSpentInMillis: number;
+	videoUrl: string;
+}
+
+export interface StoryResponse {
+	completed: boolean;
+	contentStoryId: string;
 	failVideo?: string;
 	finaleVideo?: string;
+	started: boolean;
+	storyOrderNumber: number;
+	storyPlayedId: string;
+	successVideo?: string;
+	thumb: string;
+	title: string;
+	totalBodyMoves: number;
+	totalUserTimeSpentInMillis: number;
 	instruction: string;
-};
+	introVideo?: string;
+	totalTargetActualBodyMoves: number;
+	totalTargetBodyMoves: number;
+	totalTargetUserTimeInMillis: number;
+}

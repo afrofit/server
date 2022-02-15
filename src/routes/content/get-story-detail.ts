@@ -8,6 +8,7 @@ import client from "../../util/sanity-client";
 import { STATUS_CODE } from "../../util/status-codes";
 import { mapChapterResponse, mapStoryResponse } from "./mappers";
 import queries from "./queries";
+import { ChapterResponse } from "./types";
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get(
 		const { storyId } = req.params;
 
 		try {
-			let storyPlayed;
+			let storyPlayed: PlayedStory | undefined;
 
 			const fetchedStory = await client.fetch(
 				queries.FETCH_STORY_QUERY(storyId)
@@ -47,9 +48,35 @@ router.get(
 			}
 
 			const storyDetail = mapStoryResponse(fetchedStory[0], storyPlayed);
-			console.log("Fetched StoryDetail", storyDetail);
 
-			return res.status(STATUS_CODE.OK).send(storyDetail);
+			const fetchedChapters = await client.fetch(
+				queries.FETCH_STORY_CHAPTERS_QUERY(fetchedStory[0].storyOrderNumber)
+			);
+			console.log("Fetched Story-Detail", storyDetail);
+
+			if (!fetchedChapters) return res.send([]);
+
+			if (user && storyPlayed && fetchedChapters && fetchedChapters.length) {
+				const newArray: ChapterResponse[] = [];
+
+				await Promise.all(
+					fetchedChapters.map(async (chapter: any) => {
+						const playerData = await PlayedChapter.create({
+							contentStoryId: fetchedStory[0]._id,
+							contentChapterId: chapter._id,
+							playedStoryId: storyPlayed!.id,
+							userId: user!.id,
+						}).save();
+						newArray.push(mapChapterResponse(chapter, playerData));
+					})
+				);
+
+				// console.log("New Array", newArray.reverse());
+
+				return res
+					.status(STATUS_CODE.OK)
+					.send({ story: storyDetail, chapters: newArray });
+			}
 		} catch (error) {
 			console.error(error);
 			res.status(STATUS_CODE.INTERNAL_ERROR).send(null);

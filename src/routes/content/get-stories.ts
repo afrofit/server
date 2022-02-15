@@ -46,14 +46,6 @@ router.get(
 				// console.log("New Array", newArray);
 				return res.status(STATUS_CODE.OK).send(newArray);
 			}
-
-			/**
-			 * Here we must also fetch array of StoryPlayed
-			 * Map an Array that returns objects containing both content and user performance
-			 * Then return that array to FE
-			 * Since array size is guaranteed to always be < 100,
-			 * This shouldn't be too expensive
-			 */
 		} catch (error) {
 			console.error(error);
 		}

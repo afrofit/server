@@ -29,7 +29,6 @@ router.post("/api/subscription/expire-subscription/", [isAuth_1.isAuth, isCurren
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     //Find a user from the header token here
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
-    console.log("Did we find a User?", user.id);
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.NOT_ALLOWED)
