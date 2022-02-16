@@ -26,9 +26,11 @@ const router = express_1.default.Router();
 exports.saveUserActivityRouter = router;
 router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { activityData } = req.body;
+    console.log("ActivityData", activityData);
+    console.log("ActivityData ReqBody", req.body);
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    const { error } = (0, validate_responses_1.validateActivityData)(req.body);
+    const { error } = (0, validate_responses_1.validateActivityData)(req.body.activityData);
     if (error)
         return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
     let user = yield User_1.User.findOne({ email: req.currentUser.email });
@@ -36,8 +38,9 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
         return res
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
             .send("Sorry! Something went wrong.");
+    console.log("We got here!");
     try {
-        let userDailyActivity, userPerformanceData;
+        let userDailyActivity, userPerformanceData, playedStory, playedChapter;
         userDailyActivity = yield controllers_1.default.getUserDailyActivity(user);
         if (!userDailyActivity) {
             userDailyActivity = yield UserActivityToday_1.UserActivityToday.create({
@@ -64,20 +67,39 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
             userPerformanceData.totalDaysActive = userActiveDays;
             yield userPerformanceData.save();
         }
-        /**
-         * Activity Data needs to have
-         * contentStoryId
-         * contentChapterId
-         */
+        playedStory = yield controllers_1.default.getPlayedStory(user, activityData.contentStoryId);
+        if (!playedStory)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("Sorry. Could not save your story activity.");
+        playedStory.totalBodyMoves += activityData.bodyMoves;
+        playedStory.totalUserTimeSpentInMillis +=
+            activityData.totalTimeDancedInMilliseconds;
+        yield playedStory.save();
+        playedChapter = yield controllers_1.default.getPlayedChapter(user, activityData.contentStoryId, activityData.contentChapterId, playedStory.id);
+        if (!playedChapter)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("Sorry. Could not save your chapter activity.");
+        playedChapter.bodyMoves += activityData.bodyMoves;
+        playedChapter.timeSpentInMillis +=
+            activityData.totalTimeDancedInMilliseconds;
+        playedChapter.completed = activityData.chapterCompleted;
+        playedChapter.started = activityData.chapterStarted;
+        yield playedStory.save();
+        console.log("Played", playedChapter, playedStory, userPerformanceData, userDailyActivity);
         /**
          * Look a Played_Story for this user and contentStoryId
          * Look for a Played_Chapter for this user and contentChapterId
          * Update them accordingly
          * They would have been created when user fetches stories/chapters in the first place
          */
-        return res
-            .status(status_codes_1.STATUS_CODE.OK)
-            .send({ perfomance: userPerformanceData, daily: userDailyActivity });
+        return res.status(status_codes_1.STATUS_CODE.OK).send({
+            perfomance: userPerformanceData,
+            daily: userDailyActivity,
+            chapter: playedChapter,
+            story: playedStory,
+        });
     }
     catch (error) {
         console.error(error);

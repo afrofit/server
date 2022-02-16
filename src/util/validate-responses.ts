@@ -101,6 +101,10 @@ export const validateActivityData = (activityData: VerifyActivityData) => {
 		caloriesBurned: Joi.number().required(),
 		bodyMoves: Joi.number().required(),
 		totalTimeDancedInMilliseconds: Joi.number().required(),
+		chapterStarted: Joi.boolean().required(),
+		chapterCompleted: Joi.boolean().required(),
+		contentStoryId: Joi.string().required(),
+		contentChapterId: Joi.string().required(),
 	});
 
 	return schema.validate(activityData);

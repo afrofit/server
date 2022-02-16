@@ -13,6 +13,17 @@ export interface StoryType {
 	totalTargetUserTimeInMillis: number;
 }
 
+export interface StoryResponse extends Omit<StoryType, "_id" | "description"> {
+	completed: boolean;
+	contentStoryId: string;
+	started: boolean;
+	storyPlayedId: string;
+	totalBodyMoves: number;
+	totalUserTimeSpentInMillis: number;
+	instruction: string;
+	introVideo?: string;
+}
+
 export interface ChapterType {
 	_id: string;
 	actualTargetBodyMoves: number;
@@ -21,45 +32,20 @@ export interface ChapterType {
 	instruction: string;
 	name: string;
 	storyId: string;
+	contentStoryId: string;
 	targetBodyMoves: number;
 	targetTimeInMillis: number;
 	videoUrl: string;
 }
 
-export interface ChapterResponse extends Omit<ChapterType, "_id"> {
-	actualTargetBodyMoves: number;
-	audioUrl: string;
+export interface ChapterResponse
+	extends Omit<ChapterType, "_id" | "storyId" | "name"> {
 	bodyMoves: number;
 	completed: boolean;
 	contentChapterId: string;
 	contentChapterName: string;
-	contentStoryId: string;
-	chapterOrder: number;
 	chapterPlayed: string;
 	instruction: string;
 	started: boolean;
-	targetBodyMoves: number;
-	targetTimeInMillis: number;
 	timeSpentInMillis: number;
-	videoUrl: string;
-}
-
-export interface StoryResponse {
-	completed: boolean;
-	contentStoryId: string;
-	failVideo?: string;
-	finaleVideo?: string;
-	started: boolean;
-	storyOrderNumber: number;
-	storyPlayedId: string;
-	successVideo?: string;
-	thumb: string;
-	title: string;
-	totalBodyMoves: number;
-	totalUserTimeSpentInMillis: number;
-	instruction: string;
-	introVideo?: string;
-	totalTargetActualBodyMoves: number;
-	totalTargetBodyMoves: number;
-	totalTargetUserTimeInMillis: number;
 }

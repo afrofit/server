@@ -32,7 +32,6 @@ router.get(
 			const fetchedStory = await client.fetch(
 				queries.FETCH_STORY_QUERY(storyId)
 			);
-			console.log("Fetched Story", fetchedStory[0]);
 			storyPlayed = await PlayedStory.findOne({
 				where: {
 					userId: user.id,
@@ -52,7 +51,6 @@ router.get(
 			const fetchedChapters = await client.fetch(
 				queries.FETCH_STORY_CHAPTERS_QUERY(fetchedStory[0].storyOrderNumber)
 			);
-			console.log("Fetched Story-Detail", storyDetail);
 
 			if (!fetchedChapters) return res.send([]);
 
@@ -62,7 +60,7 @@ router.get(
 				await Promise.all(
 					fetchedChapters.map(async (chapter: any) => {
 						const playerData = await PlayedChapter.create({
-							contentStoryId: fetchedStory[0]._id,
+							contentStoryId: storyDetail.contentStoryId,
 							contentChapterId: chapter._id,
 							playedStoryId: storyPlayed!.id,
 							userId: user!.id,
@@ -70,8 +68,6 @@ router.get(
 						newArray.push(mapChapterResponse(chapter, playerData));
 					})
 				);
-
-				// console.log("New Array", newArray.reverse());
 
 				return res
 					.status(STATUS_CODE.OK)

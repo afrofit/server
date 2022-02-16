@@ -46,7 +46,6 @@ router.get("/api/content/get-stories", [isAuth_1.isAuth, isCurrentUser_1.isCurre
                 }).save();
                 newArray.push((0, mappers_1.mapStoryResponse)(story, playerData));
             })));
-            // console.log("New Array", newArray);
             return res.status(status_codes_1.STATUS_CODE.OK).send(newArray);
         }
     }

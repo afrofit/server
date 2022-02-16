@@ -10,6 +10,8 @@ const mapStoryResponse = (story, performance) => {
         introVideo: story.introVideo,
         instruction: story.description,
         totalTargetUserTimeInMillis: story.totalTargetUserTimeInMillis,
+        totalTargetActualBodyMoves: story.totalTargetActualBodyMoves,
+        totalTargetBodyMoves: story.totalTargetBodyMoves,
         totalBodyMoves: performance.totalBodyMoves,
         totalUserTimeSpentInMillis: performance.totalUserTimeSpentInMillis,
         completed: performance.completed,
@@ -20,7 +22,6 @@ const mapStoryResponse = (story, performance) => {
 exports.mapStoryResponse = mapStoryResponse;
 const mapChapterResponse = (chapter, performance) => {
     return {
-        contentStoryId: chapter.storyId,
         contentChapterId: chapter._id,
         contentChapterName: chapter.name,
         audioUrl: chapter.audioUrl,
@@ -30,6 +31,7 @@ const mapChapterResponse = (chapter, performance) => {
         instruction: chapter.instruction,
         actualTargetBodyMoves: chapter.actualTargetBodyMoves,
         targetTimeInMillis: chapter.targetTimeInMillis,
+        contentStoryId: performance.contentStoryId,
         chapterPlayed: performance.id,
         completed: performance.completed,
         started: performance.started,

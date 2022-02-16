@@ -1,5 +1,7 @@
 import { isToday } from "date-fns";
 import { ActiveDay } from "../../entity/ActiveDay";
+import { PlayedChapter } from "../../entity/Played_Chapter";
+import { PlayedStory } from "../../entity/Played_Story";
 import { User } from "../../entity/User";
 import { UserActivityToday } from "../../entity/UserActivityToday";
 import { UserPerformance } from "../../entity/UserPerformance";
@@ -62,4 +64,35 @@ const getActiveDays = async (user: User) => {
 	}
 };
 
-export default { getUserDailyActivity, getUserPerformanceData, getActiveDays };
+const getPlayedStory = async (user: User, contentStoryId: string) => {
+	const playedStory = await PlayedStory.findOne({
+		userId: user.id,
+		contentStoryId,
+	});
+	console.log("from Controller", playedStory);
+
+	return playedStory ? playedStory : null;
+};
+const getPlayedChapter = async (
+	user: User,
+	contentStoryId: string,
+	contentChapterId: string,
+	playedStoryId: string
+) => {
+	const playedChapter = await PlayedChapter.findOne({
+		userId: user.id,
+		contentChapterId,
+		contentStoryId,
+		playedStoryId,
+	});
+	console.log("from Controller", playedChapter);
+	return playedChapter ? playedChapter : null;
+};
+
+export default {
+	getUserDailyActivity,
+	getUserPerformanceData,
+	getActiveDays,
+	getPlayedStory,
+	getPlayedChapter,
+};

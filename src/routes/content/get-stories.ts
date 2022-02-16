@@ -7,7 +7,7 @@ import client from "../../util/sanity-client";
 import { STATUS_CODE } from "../../util/status-codes";
 import { mapStoryResponse } from "./mappers";
 import queries from "./queries";
-import { StoryType } from "./types";
+import { StoryResponse, StoryType } from "./types";
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.get(
 			if (!fetchedStories) return res.send([]);
 
 			if (user && fetchedStories && fetchedStories.length) {
-				const newArray: any[] = [];
+				const newArray: StoryResponse[] = [];
 
 				await Promise.all(
 					fetchedStories.map(async (story: any) => {
@@ -43,7 +43,6 @@ router.get(
 					})
 				);
 
-				// console.log("New Array", newArray);
 				return res.status(STATUS_CODE.OK).send(newArray);
 			}
 		} catch (error) {

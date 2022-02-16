@@ -19,6 +19,8 @@ export const mapStoryResponse = (
 		introVideo: story.introVideo,
 		instruction: story.description,
 		totalTargetUserTimeInMillis: story.totalTargetUserTimeInMillis,
+		totalTargetActualBodyMoves: story.totalTargetActualBodyMoves,
+		totalTargetBodyMoves: story.totalTargetBodyMoves,
 		totalBodyMoves: performance.totalBodyMoves,
 		totalUserTimeSpentInMillis: performance.totalUserTimeSpentInMillis,
 		completed: performance.completed,
@@ -32,7 +34,6 @@ export const mapChapterResponse = (
 	performance: PlayedChapter
 ): ChapterResponse => {
 	return {
-		contentStoryId: chapter.storyId,
 		contentChapterId: chapter._id,
 		contentChapterName: chapter.name,
 		audioUrl: chapter.audioUrl,
@@ -42,6 +43,7 @@ export const mapChapterResponse = (
 		instruction: chapter.instruction,
 		actualTargetBodyMoves: chapter.actualTargetBodyMoves,
 		targetTimeInMillis: chapter.targetTimeInMillis,
+		contentStoryId: performance.contentStoryId,
 		chapterPlayed: performance.id,
 		completed: performance.completed,
 		started: performance.started,

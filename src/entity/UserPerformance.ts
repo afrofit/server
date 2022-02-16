@@ -19,7 +19,7 @@ export class UserPerformance extends BaseEntity {
 	@Column({ default: 0 })
 	totalBodyMoves: number;
 
-	@Column({ default: 0 })
+	@Column({ type: "double precision", default: 0 })
 	totalCaloriesBurned: number;
 
 	@Column({ default: 0 })

@@ -37,7 +37,6 @@ router.get("/api/content/get-story-detail/:storyId", [isAuth_1.isAuth, isCurrent
     try {
         let storyPlayed;
         const fetchedStory = yield sanity_client_1.default.fetch(queries_1.default.FETCH_STORY_QUERY(storyId));
-        console.log("Fetched Story", fetchedStory[0]);
         storyPlayed = yield Played_Story_1.PlayedStory.findOne({
             where: {
                 userId: user.id,
@@ -52,21 +51,19 @@ router.get("/api/content/get-story-detail/:storyId", [isAuth_1.isAuth, isCurrent
         }
         const storyDetail = (0, mappers_1.mapStoryResponse)(fetchedStory[0], storyPlayed);
         const fetchedChapters = yield sanity_client_1.default.fetch(queries_1.default.FETCH_STORY_CHAPTERS_QUERY(fetchedStory[0].storyOrderNumber));
-        console.log("Fetched Story-Detail", storyDetail);
         if (!fetchedChapters)
             return res.send([]);
         if (user && storyPlayed && fetchedChapters && fetchedChapters.length) {
             const newArray = [];
             yield Promise.all(fetchedChapters.map((chapter) => __awaiter(void 0, void 0, void 0, function* () {
                 const playerData = yield Played_Chapter_1.PlayedChapter.create({
-                    contentStoryId: fetchedStory[0]._id,
+                    contentStoryId: storyDetail.contentStoryId,
                     contentChapterId: chapter._id,
                     playedStoryId: storyPlayed.id,
                     userId: user.id,
                 }).save();
                 newArray.push((0, mappers_1.mapChapterResponse)(chapter, playerData));
             })));
-            // console.log("New Array", newArray.reverse());
             return res
                 .status(status_codes_1.STATUS_CODE.OK)
                 .send({ story: storyDetail, chapters: newArray });

@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const date_fns_1 = require("date-fns");
 const ActiveDay_1 = require("../../entity/ActiveDay");
+const Played_Chapter_1 = require("../../entity/Played_Chapter");
+const Played_Story_1 = require("../../entity/Played_Story");
 const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const UserPerformance_1 = require("../../entity/UserPerformance");
 const NOW = new Date();
@@ -59,4 +61,28 @@ const getActiveDays = (user) => __awaiter(void 0, void 0, void 0, function* () {
         return activeDayList.length + 1;
     }
 });
-exports.default = { getUserDailyActivity, getUserPerformanceData, getActiveDays };
+const getPlayedStory = (user, contentStoryId) => __awaiter(void 0, void 0, void 0, function* () {
+    const playedStory = yield Played_Story_1.PlayedStory.findOne({
+        userId: user.id,
+        contentStoryId,
+    });
+    console.log("from Controller", playedStory);
+    return playedStory ? playedStory : null;
+});
+const getPlayedChapter = (user, contentStoryId, contentChapterId, playedStoryId) => __awaiter(void 0, void 0, void 0, function* () {
+    const playedChapter = yield Played_Chapter_1.PlayedChapter.findOne({
+        userId: user.id,
+        contentChapterId,
+        contentStoryId,
+        playedStoryId,
+    });
+    console.log("from Controller", playedChapter);
+    return playedChapter ? playedChapter : null;
+});
+exports.default = {
+    getUserDailyActivity,
+    getUserPerformanceData,
+    getActiveDays,
+    getPlayedStory,
+    getPlayedChapter,
+};

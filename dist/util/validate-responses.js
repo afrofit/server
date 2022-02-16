@@ -79,6 +79,10 @@ const validateActivityData = (activityData) => {
         caloriesBurned: joi_1.default.number().required(),
         bodyMoves: joi_1.default.number().required(),
         totalTimeDancedInMilliseconds: joi_1.default.number().required(),
+        chapterStarted: joi_1.default.boolean().required(),
+        chapterCompleted: joi_1.default.boolean().required(),
+        contentStoryId: joi_1.default.string().required(),
+        contentChapterId: joi_1.default.string().required(),
     });
     return schema.validate(activityData);
 };

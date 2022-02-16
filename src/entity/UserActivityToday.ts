@@ -14,7 +14,7 @@ export class UserActivityToday extends BaseEntity {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column({ default: 0 })
+	@Column({ type: "double precision", default: 0 })
 	caloriesBurned: number;
 
 	@Column()
