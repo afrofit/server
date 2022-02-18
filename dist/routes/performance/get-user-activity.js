@@ -28,7 +28,7 @@ router.get("/api/performance/get-user-activity", [isAuth_1.isAuth, isCurrentUser
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
-            .send("Sorry! Something went wrong.");
+            .send("Sorry. Something went wrong with this request.");
     try {
         const derivedUserActivityToday = yield controllers_1.default.getUserDailyActivity(user);
         const derivedUserPerformanceData = yield controllers_1.default.getUserPerformanceData(user);

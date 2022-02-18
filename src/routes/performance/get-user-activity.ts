@@ -19,7 +19,7 @@ router.get(
 		if (!user)
 			return res
 				.status(STATUS_CODE.UNAUTHORIZED)
-				.send("Sorry! Something went wrong.");
+				.send("Sorry. Something went wrong with this request.");
 
 		try {
 			const derivedUserActivityToday =
