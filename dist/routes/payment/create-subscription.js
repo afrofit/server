@@ -54,6 +54,10 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             // 2. If YES, is it PAST due? THEN set it as expired and GO TO STEP 4
             existingSubscription.isExpired = true;
             yield existingSubscription.save();
+            if (existingSubscription.name === "trial") {
+                user.hasTrial = false;
+                yield user.save();
+            }
             const existingSubPayJoinTable = yield SubscriptionPayment_1.SubscriptionPayment.findOne({
                 where: { userId: user.id, subscriptionId: existingSubscription.id },
             });
@@ -66,8 +70,12 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
                     yield existingPayment.save();
                 }
             }
-            const response = yield (0, create_subscription_1.createSubscription)(subscriptionData, durationInDays, user.id);
-            return res.status(status_codes_1.STATUS_CODE.CREATED).send(response);
+            let newSubscription;
+            if (subscriptionData !== "trial") {
+                newSubscription = yield (0, create_subscription_1.createSubscription)(subscriptionData, durationInDays, user.id);
+            }
+            console.log("One", newSubscription);
+            return res.status(status_codes_1.STATUS_CODE.CREATED).send(newSubscription);
         }
         else if (existingSubscription &&
             !existingSubscription.isExpired &&
@@ -85,19 +93,24 @@ router.post("/api/subscription/create-subscription", [isAuth_1.isAuth, isCurrent
             };
             return res.status(status_codes_1.STATUS_CODE.OK).send(response);
         }
-        else if (existingSubscription && existingSubscription.isExpired) {
-            // 3. If NO, meaning its still valid, return it with extra freshSubscription field
-            const response = yield (0, create_subscription_1.createSubscription)(subscriptionData, durationInDays, user.id);
-            return res.status(status_codes_1.STATUS_CODE.OK).send(response);
-        }
-        else if (!existingSubscription) {
+        else if ((existingSubscription && existingSubscription.isExpired) ||
+            !existingSubscription) {
             // 4. If there's no existing subscription, then create a new one and send it
-            const response = yield (0, create_subscription_1.createSubscription)(subscriptionData, durationInDays, user.id);
-            return res.status(status_codes_1.STATUS_CODE.CREATED).send(response);
+            let newSubscription;
+            if (!user.hasTrial && subscriptionData === "trial") {
+                return res
+                    .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
+                    .send("You finished your trial already.");
+            }
+            else if (user.hasTrial) {
+                newSubscription = yield (0, create_subscription_1.createSubscription)(subscriptionData, durationInDays, user.id);
+            }
+            console.log("Two", newSubscription, "User", user);
+            return res.status(status_codes_1.STATUS_CODE.CREATED).send(newSubscription);
         }
     }
     catch (error) {
         console.error(error);
-        return res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send({});
+        return res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send(null);
     }
 }));

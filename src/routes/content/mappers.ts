@@ -21,11 +21,15 @@ export const mapStoryResponse = (
 		totalTargetUserTimeInMillis: story.totalTargetUserTimeInMillis,
 		totalTargetActualBodyMoves: story.totalTargetActualBodyMoves,
 		totalTargetBodyMoves: story.totalTargetBodyMoves,
+		storySuccessText: story.storySuccessText,
 		totalBodyMoves: performance.totalBodyMoves,
 		totalUserTimeSpentInMillis: performance.totalUserTimeSpentInMillis,
 		completed: performance.completed,
 		started: performance.started,
 		storyPlayedId: performance.id,
+		failVideo: story.failVideo,
+		successVideo: story.successVideo,
+		storyFinishVideo: story.storyFinishVideo,
 	};
 };
 

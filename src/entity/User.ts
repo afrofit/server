@@ -36,6 +36,9 @@ export class User extends BaseEntity {
 	@Column({ default: false })
 	isVerified: boolean;
 
+	@Column({ default: true })
+	hasTrial: boolean;
+
 	@Column({ default: false })
 	isRegistered: boolean;
 
@@ -75,6 +78,7 @@ export class User extends BaseEntity {
 				username: this.username,
 				joinDate: this.createdAt,
 				rankId: this.rankId,
+				hasTrial: this.hasTrial,
 			},
 			process.env.TOKEN_SECRET!
 		);

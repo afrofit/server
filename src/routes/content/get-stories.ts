@@ -35,10 +35,20 @@ router.get(
 
 				await Promise.all(
 					fetchedStories.map(async (story: any) => {
-						const playerData = await PlayedStory.create({
-							contentStoryId: story._id,
+						let playerData;
+
+						playerData = await PlayedStory.findOne({
 							userId: user!.id,
-						}).save();
+							contentStoryId: story._id,
+						});
+
+						if (!playerData) {
+							playerData = await PlayedStory.create({
+								contentStoryId: story._id,
+								userId: user!.id,
+							}).save();
+						}
+
 						newArray.push(mapStoryResponse(story, playerData));
 					})
 				);

@@ -18,8 +18,6 @@ router.post(
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const { activityData } = req.body;
-		console.log("ActivityData", activityData);
-		console.log("ActivityData ReqBody", req.body);
 
 		if (!req.currentUser)
 			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
@@ -33,8 +31,6 @@ router.post(
 			return res
 				.status(STATUS_CODE.UNAUTHORIZED)
 				.send("Sorry! Something went wrong.");
-
-		console.log("We got here!");
 
 		try {
 			let userDailyActivity, userPerformanceData, playedStory, playedChapter;
@@ -85,6 +81,8 @@ router.post(
 			playedStory.totalBodyMoves += activityData.bodyMoves;
 			playedStory.totalUserTimeSpentInMillis +=
 				activityData.totalTimeDancedInMilliseconds;
+			playedStory.started = activityData.storyStarted;
+			playedStory.completed = activityData.storyCompleted;
 
 			await playedStory.save();
 
@@ -106,7 +104,7 @@ router.post(
 			playedChapter.completed = activityData.chapterCompleted;
 			playedChapter.started = activityData.chapterStarted;
 
-			await playedStory.save();
+			await playedChapter.save();
 
 			console.log(
 				"Played",
@@ -124,7 +122,7 @@ router.post(
 			 */
 
 			return res.status(STATUS_CODE.OK).send({
-				perfomance: userPerformanceData,
+				performance: userPerformanceData,
 				daily: userDailyActivity,
 				chapter: playedChapter,
 				story: playedStory,

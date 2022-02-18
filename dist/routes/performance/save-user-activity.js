@@ -26,8 +26,6 @@ const router = express_1.default.Router();
 exports.saveUserActivityRouter = router;
 router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { activityData } = req.body;
-    console.log("ActivityData", activityData);
-    console.log("ActivityData ReqBody", req.body);
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     const { error } = (0, validate_responses_1.validateActivityData)(req.body.activityData);
@@ -38,7 +36,6 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
         return res
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
             .send("Sorry! Something went wrong.");
-    console.log("We got here!");
     try {
         let userDailyActivity, userPerformanceData, playedStory, playedChapter;
         userDailyActivity = yield controllers_1.default.getUserDailyActivity(user);
@@ -75,6 +72,8 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
         playedStory.totalBodyMoves += activityData.bodyMoves;
         playedStory.totalUserTimeSpentInMillis +=
             activityData.totalTimeDancedInMilliseconds;
+        playedStory.started = activityData.storyStarted;
+        playedStory.completed = activityData.storyCompleted;
         yield playedStory.save();
         playedChapter = yield controllers_1.default.getPlayedChapter(user, activityData.contentStoryId, activityData.contentChapterId, playedStory.id);
         if (!playedChapter)
@@ -86,7 +85,7 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
             activityData.totalTimeDancedInMilliseconds;
         playedChapter.completed = activityData.chapterCompleted;
         playedChapter.started = activityData.chapterStarted;
-        yield playedStory.save();
+        yield playedChapter.save();
         console.log("Played", playedChapter, playedStory, userPerformanceData, userDailyActivity);
         /**
          * Look a Played_Story for this user and contentStoryId
@@ -95,7 +94,7 @@ router.post("/api/performance/save-user-activity", [isAuth_1.isAuth, isCurrentUs
          * They would have been created when user fetches stories/chapters in the first place
          */
         return res.status(status_codes_1.STATUS_CODE.OK).send({
-            perfomance: userPerformanceData,
+            performance: userPerformanceData,
             daily: userDailyActivity,
             chapter: playedChapter,
             story: playedStory,

@@ -4,6 +4,8 @@ export type VerifyActivityData = {
 	totalTimeDancedInMilliseconds: number;
 	chapterStarted: boolean;
 	chapterCompleted: boolean;
+	storyStarted: boolean;
+	storyCompleted: boolean;
 	contentStoryId: string;
 	contentChapterId: string;
 };

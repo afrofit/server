@@ -66,7 +66,6 @@ const getPlayedStory = (user, contentStoryId) => __awaiter(void 0, void 0, void 
         userId: user.id,
         contentStoryId,
     });
-    console.log("from Controller", playedStory);
     return playedStory ? playedStory : null;
 });
 const getPlayedChapter = (user, contentStoryId, contentChapterId, playedStoryId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -76,7 +75,6 @@ const getPlayedChapter = (user, contentStoryId, contentChapterId, playedStoryId)
         contentStoryId,
         playedStoryId,
     });
-    console.log("from Controller", playedChapter);
     return playedChapter ? playedChapter : null;
 });
 exports.default = {

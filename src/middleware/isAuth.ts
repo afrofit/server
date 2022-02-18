@@ -12,6 +12,7 @@ export interface UserPayload {
 	username: string;
 	joinDate: string;
 	rankId: string;
+	hasTrial: boolean;
 }
 
 declare global {

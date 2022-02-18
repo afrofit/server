@@ -6,4 +6,6 @@ export interface IActivityType {
 	caloriesBurned: number;
 	contentStoryId: number;
 	contentChapterId: string;
+	storyStarted: boolean;
+	storyCompleted: boolean;
 }

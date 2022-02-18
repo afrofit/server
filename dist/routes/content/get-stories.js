@@ -40,10 +40,17 @@ router.get("/api/content/get-stories", [isAuth_1.isAuth, isCurrentUser_1.isCurre
         if (user && fetchedStories && fetchedStories.length) {
             const newArray = [];
             yield Promise.all(fetchedStories.map((story) => __awaiter(void 0, void 0, void 0, function* () {
-                const playerData = yield Played_Story_1.PlayedStory.create({
-                    contentStoryId: story._id,
+                let playerData;
+                playerData = yield Played_Story_1.PlayedStory.findOne({
                     userId: user.id,
-                }).save();
+                    contentStoryId: story._id,
+                });
+                if (!playerData) {
+                    playerData = yield Played_Story_1.PlayedStory.create({
+                        contentStoryId: story._id,
+                        userId: user.id,
+                    }).save();
+                }
                 newArray.push((0, mappers_1.mapStoryResponse)(story, playerData));
             })));
             return res.status(status_codes_1.STATUS_CODE.OK).send(newArray);

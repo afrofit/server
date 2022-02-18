@@ -59,12 +59,23 @@ router.get(
 
 				await Promise.all(
 					fetchedChapters.map(async (chapter: any) => {
-						const playerData = await PlayedChapter.create({
-							contentStoryId: storyDetail.contentStoryId,
-							contentChapterId: chapter._id,
-							playedStoryId: storyPlayed!.id,
+						let playerData;
+
+						playerData = await PlayedChapter.findOne({
 							userId: user!.id,
-						}).save();
+							contentChapterId: chapter._id,
+							contentStoryId: storyDetail.contentStoryId,
+						});
+
+						if (!playerData) {
+							playerData = await PlayedChapter.create({
+								contentStoryId: storyDetail.contentStoryId,
+								contentChapterId: chapter._id,
+								playedStoryId: storyPlayed!.id,
+								userId: user!.id,
+							}).save();
+						}
+
 						newArray.push(mapChapterResponse(chapter, playerData));
 					})
 				);

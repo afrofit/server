@@ -1,16 +1,17 @@
 export interface StoryType {
 	_id: string;
 	description: string;
-	failVideo?: string;
-	finaleVideo?: string;
-	introVideo?: string;
+	failVideo: string;
+	storyFinishVideo: string;
+	introVideo: string;
 	storyOrderNumber: number;
-	successVideo?: string;
+	successVideo: string;
 	thumb: string;
 	title: string;
 	totalTargetActualBodyMoves: number;
 	totalTargetBodyMoves: number;
 	totalTargetUserTimeInMillis: number;
+	storySuccessText: string;
 }
 
 export interface StoryResponse extends Omit<StoryType, "_id" | "description"> {
@@ -21,7 +22,6 @@ export interface StoryResponse extends Omit<StoryType, "_id" | "description"> {
 	totalBodyMoves: number;
 	totalUserTimeSpentInMillis: number;
 	instruction: string;
-	introVideo?: string;
 }
 
 export interface ChapterType {

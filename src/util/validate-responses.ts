@@ -103,6 +103,8 @@ export const validateActivityData = (activityData: VerifyActivityData) => {
 		totalTimeDancedInMilliseconds: Joi.number().required(),
 		chapterStarted: Joi.boolean().required(),
 		chapterCompleted: Joi.boolean().required(),
+		storyStarted: Joi.boolean().required(),
+		storyCompleted: Joi.boolean().required(),
 		contentStoryId: Joi.string().required(),
 		contentChapterId: Joi.string().required(),
 	});

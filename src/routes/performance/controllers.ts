@@ -69,7 +69,6 @@ const getPlayedStory = async (user: User, contentStoryId: string) => {
 		userId: user.id,
 		contentStoryId,
 	});
-	console.log("from Controller", playedStory);
 
 	return playedStory ? playedStory : null;
 };
@@ -85,7 +84,6 @@ const getPlayedChapter = async (
 		contentStoryId,
 		playedStoryId,
 	});
-	console.log("from Controller", playedChapter);
 	return playedChapter ? playedChapter : null;
 };
 

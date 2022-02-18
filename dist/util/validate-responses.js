@@ -81,6 +81,8 @@ const validateActivityData = (activityData) => {
         totalTimeDancedInMilliseconds: joi_1.default.number().required(),
         chapterStarted: joi_1.default.boolean().required(),
         chapterCompleted: joi_1.default.boolean().required(),
+        storyStarted: joi_1.default.boolean().required(),
+        storyCompleted: joi_1.default.boolean().required(),
         contentStoryId: joi_1.default.string().required(),
         contentChapterId: joi_1.default.string().required(),
     });

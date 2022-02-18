@@ -12,7 +12,11 @@ const FETCH_STORY_QUERY = (storyId) => {
         "slug": slug.current,
         totalTargetUserTimeInMillis,
         totalTargetActualBodyMoves,
-        totalTargetBodyMoves
+        totalTargetBodyMoves,
+        "failVideo": chapterFailVideo.url,
+        "successVideo": chapterSuccessVideo.url,
+        "storyFinishVideo": storyFinishVideo.url,
+        storySuccessText
 
       }`;
 };
@@ -47,7 +51,12 @@ const FETCH_STORIES_QUERY = () => {
         "slug": slug.current,
         totalTargetUserTimeInMillis,
         totalTargetActualBodyMoves,
-        totalTargetBodyMoves} | order(storyOrderNumber asc)`;
+        "failVideo": chapterFailVideo.url,
+        "successVideo": chapterSuccessVideo.url,
+        "storyFinishVideo": storyFinishVideo.url,
+        totalTargetBodyMoves,
+        storySuccessText
+        } | order(storyOrderNumber asc)`;
 };
 exports.default = {
     FETCH_STORIES_QUERY,

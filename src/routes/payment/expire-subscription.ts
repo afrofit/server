@@ -25,45 +25,51 @@ router.post(
 				.status(STATUS_CODE.NOT_ALLOWED)
 				.send("That's an illegal action.");
 
-		const currentSub = await Subscription.findOne({
-			userId: user.id,
-			id: subscriptionId,
-		});
-
-		if (!currentSub)
-			return res
-				.status(STATUS_CODE.INTERNAL_ERROR)
-				.send("This subscription doesn't exist or is expired!");
-
-		const paymentSubscriptionJoinTable = await SubscriptionPayment.findOne({
-			where: { userId: user.id, subscriptionId: currentSub.id },
-		});
-
-		if (!paymentSubscriptionJoinTable)
-			return res
-				.status(STATUS_CODE.INTERNAL_ERROR)
-				.send("This subscription doesn't exist or is expired!");
-
-		const currentPayment = await Payment.findOne({
-			userId: user.id,
-			id: paymentSubscriptionJoinTable.paymentId,
-		});
-
-		if (!currentPayment)
-			return res
-				.status(STATUS_CODE.INTERNAL_ERROR)
-				.send("This payment doesn't exist or is expired!");
-
 		try {
+			const currentSub = await Subscription.findOne({
+				userId: user.id,
+				id: subscriptionId,
+			});
+
+			if (!currentSub)
+				return res
+					.status(STATUS_CODE.INTERNAL_ERROR)
+					.send("This subscription doesn't exist or is expired!");
+
+			if (currentSub.name === "trial" && user.hasTrial) {
+				user.hasTrial = false;
+				await user.save();
+			}
+
+			const paymentSubscriptionJoinTable = await SubscriptionPayment.findOne({
+				where: { userId: user.id, subscriptionId: currentSub.id },
+			});
+
+			if (!paymentSubscriptionJoinTable)
+				return res
+					.status(STATUS_CODE.INTERNAL_ERROR)
+					.send("This subscription doesn't exist or is expired!");
+
+			const currentPayment = await Payment.findOne({
+				userId: user.id,
+				id: paymentSubscriptionJoinTable.paymentId,
+			});
+
+			if (!currentPayment)
+				return res
+					.status(STATUS_CODE.INTERNAL_ERROR)
+					.send("This payment doesn't exist or is expired!");
+
 			currentSub.isExpired = true;
 			currentPayment.isActive = false;
 			await currentSub.save();
 			await currentPayment.save();
+
+			return res.status(STATUS_CODE.OK).send(currentSub);
 		} catch (error) {
 			console.error(error);
+			return res.status(STATUS_CODE.INTERNAL_ERROR).send(null);
 		}
-
-		return res.status(STATUS_CODE.OK).send(currentSub);
 	}
 );
 

@@ -33,37 +33,42 @@ router.post("/api/subscription/expire-subscription/", [isAuth_1.isAuth, isCurren
         return res
             .status(status_codes_1.STATUS_CODE.NOT_ALLOWED)
             .send("That's an illegal action.");
-    const currentSub = yield Subscription_1.Subscription.findOne({
-        userId: user.id,
-        id: subscriptionId,
-    });
-    if (!currentSub)
-        return res
-            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-            .send("This subscription doesn't exist or is expired!");
-    const paymentSubscriptionJoinTable = yield SubscriptionPayment_1.SubscriptionPayment.findOne({
-        where: { userId: user.id, subscriptionId: currentSub.id },
-    });
-    if (!paymentSubscriptionJoinTable)
-        return res
-            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-            .send("This subscription doesn't exist or is expired!");
-    const currentPayment = yield Payment_1.Payment.findOne({
-        userId: user.id,
-        id: paymentSubscriptionJoinTable.paymentId,
-    });
-    if (!currentPayment)
-        return res
-            .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-            .send("This payment doesn't exist or is expired!");
     try {
+        const currentSub = yield Subscription_1.Subscription.findOne({
+            userId: user.id,
+            id: subscriptionId,
+        });
+        if (!currentSub)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("This subscription doesn't exist or is expired!");
+        if (currentSub.name === "trial" && user.hasTrial) {
+            user.hasTrial = false;
+            yield user.save();
+        }
+        const paymentSubscriptionJoinTable = yield SubscriptionPayment_1.SubscriptionPayment.findOne({
+            where: { userId: user.id, subscriptionId: currentSub.id },
+        });
+        if (!paymentSubscriptionJoinTable)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("This subscription doesn't exist or is expired!");
+        const currentPayment = yield Payment_1.Payment.findOne({
+            userId: user.id,
+            id: paymentSubscriptionJoinTable.paymentId,
+        });
+        if (!currentPayment)
+            return res
+                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
+                .send("This payment doesn't exist or is expired!");
         currentSub.isExpired = true;
         currentPayment.isActive = false;
         yield currentSub.save();
         yield currentPayment.save();
+        return res.status(status_codes_1.STATUS_CODE.OK).send(currentSub);
     }
     catch (error) {
         console.error(error);
+        return res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send(null);
     }
-    return res.status(status_codes_1.STATUS_CODE.OK).send(currentSub);
 }));

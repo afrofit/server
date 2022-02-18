@@ -43,6 +43,7 @@ let User = class User extends typeorm_1.BaseEntity {
             username: this.username,
             joinDate: this.createdAt,
             rankId: this.rankId,
+            hasTrial: this.hasTrial,
         }, process.env.TOKEN_SECRET);
         return token;
     }
@@ -96,6 +97,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isVerified", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "hasTrial", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)

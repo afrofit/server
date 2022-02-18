@@ -56,12 +56,20 @@ router.get("/api/content/get-story-detail/:storyId", [isAuth_1.isAuth, isCurrent
         if (user && storyPlayed && fetchedChapters && fetchedChapters.length) {
             const newArray = [];
             yield Promise.all(fetchedChapters.map((chapter) => __awaiter(void 0, void 0, void 0, function* () {
-                const playerData = yield Played_Chapter_1.PlayedChapter.create({
-                    contentStoryId: storyDetail.contentStoryId,
-                    contentChapterId: chapter._id,
-                    playedStoryId: storyPlayed.id,
+                let playerData;
+                playerData = yield Played_Chapter_1.PlayedChapter.findOne({
                     userId: user.id,
-                }).save();
+                    contentChapterId: chapter._id,
+                    contentStoryId: storyDetail.contentStoryId,
+                });
+                if (!playerData) {
+                    playerData = yield Played_Chapter_1.PlayedChapter.create({
+                        contentStoryId: storyDetail.contentStoryId,
+                        contentChapterId: chapter._id,
+                        playedStoryId: storyPlayed.id,
+                        userId: user.id,
+                    }).save();
+                }
                 newArray.push((0, mappers_1.mapChapterResponse)(chapter, playerData));
             })));
             return res
