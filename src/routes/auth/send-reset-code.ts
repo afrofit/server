@@ -11,10 +11,11 @@ router.post(
 	"/api/users/send-reset-code/",
 	async (req: Request, res: Response) => {
 		const user = await User.findOne({ email: req.body.email });
+		console.log("Req Body", req.body);
 		if (!user)
 			return res
 				.status(STATUS_CODE.UNAUTHORIZED)
-				.send("There is a problem with the email.");
+				.send("There is a problem with this email.");
 
 		const { error } = validateEmailResetCode(req.body);
 		if (error)

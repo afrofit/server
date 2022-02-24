@@ -36,6 +36,10 @@ const get_user_activity_1 = require("./routes/performance/get-user-activity");
 const save_user_activity_1 = require("./routes/performance/save-user-activity");
 const get_stories_1 = require("./routes/content/get-stories");
 const get_story_detail_1 = require("./routes/content/get-story-detail");
+const save_user_daily_activity_1 = require("./routes/performance/save-user-daily-activity");
+const save_user_performance_data_1 = require("./routes/performance/save-user-performance-data");
+const get_user_daily_activity_1 = require("./routes/performance/get-user-daily-activity");
+const get_user_performance_data_1 = require("./routes/performance/get-user-performance-data");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -62,7 +66,11 @@ app.use(get_subscription_1.getSubscriptionRouter);
 app.use(create_leaderboard_1.createLeaderboardRouter);
 //User Activity Routes
 app.use(get_user_activity_1.getUserActivityRouter);
+app.use(get_user_daily_activity_1.getUserDailyActivityRouter);
+app.use(get_user_performance_data_1.getUserPerformanceDataRouter);
 app.use(save_user_activity_1.saveUserActivityRouter);
+app.use(save_user_daily_activity_1.saveUserDailyActivityRouter);
+app.use(save_user_performance_data_1.saveUserPerformanceDataRouter);
 //Content Routes
 app.use(get_stories_1.getStoriesRouter);
 app.use(get_story_detail_1.getStoryDetailsContentRouter);

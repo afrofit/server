@@ -22,10 +22,11 @@ const router = express_1.default.Router();
 exports.sendResetCodeRouter = router;
 router.post("/api/users/send-reset-code/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.User.findOne({ email: req.body.email });
+    console.log("Req Body", req.body);
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
-            .send("There is a problem with the email.");
+            .send("There is a problem with this email.");
     const { error } = (0, validate_responses_1.validateEmailResetCode)(req.body);
     if (error)
         return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);

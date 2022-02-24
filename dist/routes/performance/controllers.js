@@ -16,20 +16,32 @@ const Played_Story_1 = require("../../entity/Played_Story");
 const UserActivityToday_1 = require("../../entity/UserActivityToday");
 const UserPerformance_1 = require("../../entity/UserPerformance");
 const NOW = new Date();
+const createUserDailyActivity = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const newDailyUserActivity = yield UserActivityToday_1.UserActivityToday.create({
+        userId: user.id,
+    }).save();
+    return newDailyUserActivity;
+});
+const createUserPerformanceData = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const newUserPerformanceData = yield UserPerformance_1.UserPerformance.create({
+        userId: user.id,
+    }).save();
+    return newUserPerformanceData;
+});
 const getUserDailyActivity = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const userActivityList = yield UserActivityToday_1.UserActivityToday.find({
         userId: user.id,
     });
-    if (!userActivityList || !userActivityList.length) {
-        return null;
-    }
-    const userActivityToday = userActivityList[0];
-    if (userActivityToday.dayEndTime > NOW &&
-        userActivityToday.dayStartTime < NOW) {
-        return userActivityToday;
-    }
-    else {
-        return null;
+    if (userActivityList && userActivityList.length) {
+        const userActivityToday = userActivityList[0];
+        if (userActivityToday.dayEndTime > NOW &&
+            userActivityToday.dayStartTime < NOW) {
+            return userActivityToday;
+        }
+        else {
+            const newUserActivityToday = yield createUserDailyActivity(user);
+            return newUserActivityToday;
+        }
     }
 });
 const getUserPerformanceData = (user) => __awaiter(void 0, void 0, void 0, function* () {
@@ -39,7 +51,8 @@ const getUserPerformanceData = (user) => __awaiter(void 0, void 0, void 0, funct
         },
     });
     if (!userPerformanceData) {
-        return null;
+        const newUserPerformanceData = yield createUserPerformanceData(user);
+        return newUserPerformanceData;
     }
     return userPerformanceData;
 });

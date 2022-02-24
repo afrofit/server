@@ -1,10 +1,6 @@
 import express, { Request, Response } from "express";
 import _ from "lodash";
-import {
-	Subscription,
-	SubscriptionDuration,
-	SubscriptionName,
-} from "../../entity/Subscription";
+
 import { User } from "../../entity/User";
 import { UserActivityToday } from "../../entity/UserActivityToday";
 import { UserPerformance } from "../../entity/UserPerformance";
