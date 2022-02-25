@@ -29,11 +29,9 @@ router.post(
 
 			console.log("Resent Verify Email Code: ", user.code);
 
-			/**
-			 * Trigger E-Mail Send Here
-			 */
+			/** Trigger E-Mail Send Here */
 
-			return res.status(STATUS_CODE.CREATED).json({ success: true });
+			return res.status(STATUS_CODE.CREATED).send({ success: true });
 		} catch (error) {
 			console.error(error);
 		}

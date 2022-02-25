@@ -34,7 +34,7 @@ router.post("/api/users/resend-verify-code", [isAuth_1.isAuth, isCurrentUser_1.i
         user.code = newCode;
         yield user.save();
         console.log("Resending Verify Email Code: ", user.code);
-        //Send Email to User Here
+        /** Send Email to User Here */
         return res.status(status_codes_1.STATUS_CODE.OK).send({ success: true });
     }
     catch (error) {

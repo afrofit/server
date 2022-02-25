@@ -30,7 +30,7 @@ router.post(
 
 			console.log("Resending Verify Email Code: ", user.code);
 
-			//Send Email to User Here
+			/** Send Email to User Here */
 
 			return res.status(STATUS_CODE.OK).send({ success: true });
 		} catch (error) {
