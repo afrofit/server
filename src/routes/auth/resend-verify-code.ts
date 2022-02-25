@@ -28,11 +28,11 @@ router.post(
 			user.code = newCode;
 			await user.save();
 
-			console.log("Resent Verify Email Code: ", user.code);
+			console.log("Resending Verify Email Code: ", user.code);
 
-			//Send Email to User Here
+			/** Send Email to User Here */
 
-			return res.status(STATUS_CODE.OK).json({ success: true });
+			return res.status(STATUS_CODE.OK).send({ success: true });
 		} catch (error) {
 			console.error(error);
 		}

@@ -12,25 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserPerformanceDataRouter = void 0;
+exports.saveUserPerformanceDataRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const checkUserAuth_1 = require("../../lib/checkUserAuth");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
-const status_codes_1 = require("../../util/status-codes");
-const controllers_1 = __importDefault(require("./controllers"));
 const router = express_1.default.Router();
-exports.getUserPerformanceDataRouter = router;
-router.get("/api/performance/get-user-performance-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield (0, checkUserAuth_1.checkUserAuth)(req);
-    if (!user)
-        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    try {
-        const derivedUserPerformanceData = yield controllers_1.default.getUserPerformanceData(user);
-        return res.status(status_codes_1.STATUS_CODE.OK).send(derivedUserPerformanceData);
-    }
-    catch (error) {
-        console.error(error);
-        return res.status(status_codes_1.STATUS_CODE.INTERNAL_ERROR).send(null);
-    }
-}));
+exports.saveUserPerformanceDataRouter = router;
+router.post("/api/performance/save-user-performance-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () { }));

@@ -14,7 +14,7 @@ router.post(
 		if (!user)
 			return res
 				.status(STATUS_CODE.UNAUTHORIZED)
-				.send("There is a problem with the email.");
+				.send("There is a problem with this email.");
 
 		const { error } = validateEmailResetCode(req.body);
 		if (error)
@@ -28,7 +28,7 @@ router.post(
 
 			console.log("Email Reset Code: ", user.code);
 
-			//Send Email to User Here, using the code and username
+			/** Send Email to User Here, using the code and username */
 
 			const resetToken = user.generateResetToken();
 

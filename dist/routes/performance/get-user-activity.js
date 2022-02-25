@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserActivityRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const User_1 = require("../../entity/User");
+const checkUserAuth_1 = require("../../lib/checkUserAuth");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const status_codes_1 = require("../../util/status-codes");
@@ -22,13 +22,9 @@ const controllers_1 = __importDefault(require("./controllers"));
 const router = express_1.default.Router();
 exports.getUserActivityRouter = router;
 router.get("/api/performance/get-user-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.currentUser)
-        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    let user = yield User_1.User.findOne({ id: req.currentUser.id });
+    const user = yield (0, checkUserAuth_1.checkUserAuth)(req);
     if (!user)
-        return res
-            .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
-            .send("Sorry! Something went wrong.");
+        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     try {
         const derivedUserActivityToday = yield controllers_1.default.getUserDailyActivity(user);
         const derivedUserPerformanceData = yield controllers_1.default.getUserPerformanceData(user);

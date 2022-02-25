@@ -8,24 +8,39 @@ import { UserPerformance } from "../../entity/UserPerformance";
 
 const NOW = new Date();
 
+const createUserDailyActivity = async (user: User) => {
+	const newDailyUserActivity = await UserActivityToday.create({
+		userId: user.id,
+	}).save();
+
+	return newDailyUserActivity;
+};
+
+const createUserPerformanceData = async (user: User) => {
+	const newUserPerformanceData = await UserPerformance.create({
+		userId: user.id,
+	}).save();
+
+	return newUserPerformanceData;
+};
+
 const getUserDailyActivity = async (user: User) => {
 	const userActivityList = await UserActivityToday.find({
 		userId: user.id,
 	});
 
-	if (!userActivityList || !userActivityList.length) {
-		return null;
-	}
+	if (userActivityList && userActivityList.length) {
+		const userActivityToday = userActivityList[0];
 
-	const userActivityToday = userActivityList[0];
-
-	if (
-		userActivityToday.dayEndTime > NOW &&
-		userActivityToday.dayStartTime < NOW
-	) {
-		return userActivityToday;
-	} else {
-		return null;
+		if (
+			userActivityToday.dayEndTime > NOW &&
+			userActivityToday.dayStartTime < NOW
+		) {
+			return userActivityToday;
+		} else {
+			const newUserActivityToday = await createUserDailyActivity(user);
+			return newUserActivityToday;
+		}
 	}
 };
 
@@ -37,7 +52,8 @@ const getUserPerformanceData = async (user: User) => {
 	});
 
 	if (!userPerformanceData) {
-		return null;
+		const newUserPerformanceData = await createUserPerformanceData(user);
+		return newUserPerformanceData;
 	}
 
 	return userPerformanceData;

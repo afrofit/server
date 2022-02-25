@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-
 import { checkUserAuth } from "../../lib/checkUserAuth";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
@@ -9,7 +8,7 @@ import performanceControllers from "./controllers";
 const router = express.Router();
 
 router.get(
-	"/api/performance/get-user-activity",
+	"/api/performance/get-user-daily-activity",
 	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const user = await checkUserAuth(req);
@@ -19,12 +18,8 @@ router.get(
 		try {
 			const derivedUserActivityToday =
 				await performanceControllers.getUserDailyActivity(user);
-			const derivedUserPerformanceData =
-				await performanceControllers.getUserPerformanceData(user);
-			return res.status(STATUS_CODE.OK).send({
-				performance: derivedUserPerformanceData,
-				daily: derivedUserActivityToday,
-			});
+
+			return res.status(STATUS_CODE.OK).send(derivedUserActivityToday);
 		} catch (error) {
 			console.error(error);
 			return res.status(STATUS_CODE.INTERNAL_ERROR).send(null);
@@ -32,4 +27,4 @@ router.get(
 	}
 );
 
-export { router as getUserActivityRouter };
+export { router as getUserDailyActivityRouter };

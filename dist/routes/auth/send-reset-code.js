@@ -25,7 +25,7 @@ router.post("/api/users/send-reset-code/", (req, res) => __awaiter(void 0, void 
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.UNAUTHORIZED)
-            .send("There is a problem with the email.");
+            .send("There is a problem with this email.");
     const { error } = (0, validate_responses_1.validateEmailResetCode)(req.body);
     if (error)
         return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
@@ -34,7 +34,7 @@ router.post("/api/users/send-reset-code/", (req, res) => __awaiter(void 0, void 
         user.code = newCode;
         yield user.save();
         console.log("Email Reset Code: ", user.code);
-        //Send Email to User Here, using the code and username
+        /** Send Email to User Here, using the code and username */
         const resetToken = user.generateResetToken();
         return res
             .status(status_codes_1.STATUS_CODE.OK)

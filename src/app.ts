@@ -21,6 +21,10 @@ import { getUserActivityRouter } from "./routes/performance/get-user-activity";
 import { saveUserActivityRouter } from "./routes/performance/save-user-activity";
 import { getStoriesRouter } from "./routes/content/get-stories";
 import { getStoryDetailsContentRouter } from "./routes/content/get-story-detail";
+import { saveUserDailyActivityRouter } from "./routes/performance/save-user-daily-activity";
+import { saveUserPerformanceDataRouter } from "./routes/performance/save-user-performance-data";
+import { getUserDailyActivityRouter } from "./routes/performance/get-user-daily-activity";
+import { getUserPerformanceDataRouter } from "./routes/performance/get-user-performance-data";
 
 const app = express();
 app.set("trust proxy", true);
@@ -51,7 +55,11 @@ app.use(createLeaderboardRouter);
 
 //User Activity Routes
 app.use(getUserActivityRouter);
+app.use(getUserDailyActivityRouter);
+app.use(getUserPerformanceDataRouter);
 app.use(saveUserActivityRouter);
+app.use(saveUserDailyActivityRouter);
+app.use(saveUserPerformanceDataRouter);
 
 //Content Routes
 app.use(getStoriesRouter);

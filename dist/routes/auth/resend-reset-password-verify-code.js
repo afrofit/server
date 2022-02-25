@@ -33,10 +33,8 @@ router.post("/api/users/resend-reset-password-verify-code", [isReactivatable_1.i
         user.code = newCode;
         yield user.save();
         console.log("Resent Verify Email Code: ", user.code);
-        /**
-         * Trigger E-Mail Send Here
-         */
-        return res.status(status_codes_1.STATUS_CODE.CREATED).json({ success: true });
+        /** Trigger E-Mail Send Here */
+        return res.status(status_codes_1.STATUS_CODE.CREATED).send({ success: true });
     }
     catch (error) {
         console.error(error);
