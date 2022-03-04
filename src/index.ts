@@ -5,7 +5,7 @@ import { createConnection, Connection, getConnectionOptions } from "typeorm";
 import { CronJob } from "cron";
 
 import { app } from "./app";
-import { createWeeklyLeaderboard } from "./controllers/create-weekly-leaderboard";
+import { createWeeklyLeaderboard } from "./controllers/weekly-leaderboard";
 
 const start = async () => {
 	//Check if necessary env vars are set

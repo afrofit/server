@@ -66,6 +66,10 @@ router.post("/api/performance/reset-story-content-activity", [isAuth_1.isAuth, i
                 yield chapter.save();
                 resetChapters.push(chapter);
             })));
+            console.log({
+                chapters: resetChapters,
+                story: playedStory,
+            });
             return res.status(status_codes_1.STATUS_CODE.OK).send({
                 chapters: resetChapters,
                 story: playedStory,

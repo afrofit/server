@@ -4,13 +4,9 @@ import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
 import { STATUS_CODE } from "../../util/status-codes";
 import { User } from "../../entity/User";
-import {
-	validateContentPlayedData,
-	validateResetContentData,
-} from "../../util/validate-responses";
+import { validateResetContentData } from "../../util/validate-responses";
 
 import performanceControllers from "./controllers";
-import { PlayedStory } from "../../entity/Played_Story";
 import { PlayedChapter } from "../../entity/Played_Chapter";
 
 const router = express.Router();
@@ -79,6 +75,11 @@ router.post(
 						resetChapters.push(chapter);
 					})
 				);
+
+				console.log({
+					chapters: resetChapters,
+					story: playedStory,
+				});
 
 				return res.status(STATUS_CODE.OK).send({
 					chapters: resetChapters,

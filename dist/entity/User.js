@@ -86,7 +86,7 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "code", void 0);
 __decorate([
-    (0, typeorm_1.Column)("int", { nullable: true }),
+    (0, typeorm_1.Column)("int", { default: 1 }),
     __metadata("design:type", Number)
 ], User.prototype, "rankId", void 0);
 __decorate([

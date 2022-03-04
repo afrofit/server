@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateResetContentData = exports.validateContentPlayedData = exports.validateUserPerformanceData = exports.validateDailyActivityData = exports.validateActivityData = exports.validateUserActivityToday = exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
+exports.validateMarathonData = exports.validateResetContentData = exports.validateContentPlayedData = exports.validateUserPerformanceData = exports.validateDailyActivityData = exports.validateActivityData = exports.validateUserActivityToday = exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
 const joi_1 = __importDefault(require("joi"));
 const validateCreateAccount = (user) => {
     const schema = joi_1.default.object({
@@ -129,3 +129,11 @@ const validateResetContentData = (resetContentData) => {
     return schema.validate(resetContentData);
 };
 exports.validateResetContentData = validateResetContentData;
+const validateMarathonData = (marathonData) => {
+    const schema = joi_1.default.object({
+        bodyMoves: joi_1.default.number().required(),
+        marathonId: joi_1.default.string().required(),
+    });
+    return schema.validate(marathonData);
+};
+exports.validateMarathonData = validateMarathonData;

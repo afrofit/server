@@ -37,3 +37,8 @@ export type VerifyContentPlayedData = {
 export type VerifyResetContentData = {
 	contentStoryId: string;
 };
+
+export type VerifyMarathonData = {
+	bodyMoves: number;
+	marathonId: string;
+};

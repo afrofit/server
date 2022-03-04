@@ -3,6 +3,7 @@ import {
 	VerifyActivityData,
 	VerifyContentPlayedData,
 	VerifyDailyActivityData,
+	VerifyMarathonData,
 	VerifyPerformanceData,
 	VerifyResetContentData,
 } from "./performance-types";
@@ -168,4 +169,13 @@ export const validateResetContentData = (
 	});
 
 	return schema.validate(resetContentData);
+};
+
+export const validateMarathonData = (marathonData: VerifyMarathonData) => {
+	const schema = Joi.object({
+		bodyMoves: Joi.number().required(),
+		marathonId: Joi.string().required(),
+	});
+
+	return schema.validate(marathonData);
 };
