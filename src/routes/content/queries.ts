@@ -20,8 +20,17 @@ const FETCH_STORY_QUERY = (storyId: string) => {
 };
 
 const FETCH_CHAPTER_QUERY = (chapterId: string) => {
-	return `*[_type=="chapter && _id="${chapterId}"]{
-        ...
+	return `*[_type=="chapter" && _id=="${chapterId}"]{
+                _id,
+                actualTargetBodyMoves,
+               "audioUrl":audioInstruction.url,
+                chapterOrder,
+                instruction,
+                name,
+                "videoUrl": video.url,
+                targetTimeInMillis,
+                targetBodyMoves,
+                storyId
     }`;
 };
 

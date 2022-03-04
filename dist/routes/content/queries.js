@@ -21,8 +21,17 @@ const FETCH_STORY_QUERY = (storyId) => {
       }`;
 };
 const FETCH_CHAPTER_QUERY = (chapterId) => {
-    return `*[_type=="chapter && _id="${chapterId}"]{
-        ...
+    return `*[_type=="chapter" && _id=="${chapterId}"]{
+                _id,
+                actualTargetBodyMoves,
+               "audioUrl":audioInstruction.url,
+                chapterOrder,
+                instruction,
+                name,
+                "videoUrl": video.url,
+                targetTimeInMillis,
+                targetBodyMoves,
+                storyId
     }`;
 };
 const FETCH_STORY_CHAPTERS_QUERY = (storyId) => {

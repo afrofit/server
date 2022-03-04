@@ -103,6 +103,8 @@ const getPlayedChapter = async (
 	return playedChapter ? playedChapter : null;
 };
 
+const getPlayedChapters = async () => {};
+
 export default {
 	getUserDailyActivity,
 	getUserPerformanceData,

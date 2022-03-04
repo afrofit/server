@@ -90,6 +90,7 @@ const getPlayedChapter = (user, contentStoryId, contentChapterId, playedStoryId)
     });
     return playedChapter ? playedChapter : null;
 });
+const getPlayedChapters = () => __awaiter(void 0, void 0, void 0, function* () { });
 exports.default = {
     getUserDailyActivity,
     getUserPerformanceData,

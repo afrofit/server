@@ -25,6 +25,8 @@ import { saveUserDailyActivityRouter } from "./routes/performance/save-user-dail
 import { saveUserPerformanceDataRouter } from "./routes/performance/save-user-performance-data";
 import { getUserDailyActivityRouter } from "./routes/performance/get-user-daily-activity";
 import { getUserPerformanceDataRouter } from "./routes/performance/get-user-performance-data";
+import { getChapterDetailsContentRouter } from "./routes/content/get-chapter-detail";
+import { saveUserContentPlayedRouter } from "./routes/performance/save-user-content-played";
 
 const app = express();
 app.set("trust proxy", true);
@@ -60,10 +62,12 @@ app.use(getUserPerformanceDataRouter);
 app.use(saveUserActivityRouter);
 app.use(saveUserDailyActivityRouter);
 app.use(saveUserPerformanceDataRouter);
+app.use(saveUserContentPlayedRouter);
 
 //Content Routes
 app.use(getStoriesRouter);
 app.use(getStoryDetailsContentRouter);
+app.use(getChapterDetailsContentRouter);
 
 app.get("/", (req: Request, res: Response) => {
 	return res.send("Welcome to the Afrofit API.");

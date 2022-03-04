@@ -22,6 +22,7 @@ export interface StoryResponse extends Omit<StoryType, "_id" | "description"> {
 	totalBodyMoves: number;
 	totalUserTimeSpentInMillis: number;
 	instruction: string;
+	// oldTotalBodyMoves: number;
 }
 
 export interface ChapterType {
@@ -41,6 +42,7 @@ export interface ChapterType {
 export interface ChapterResponse
 	extends Omit<ChapterType, "_id" | "storyId" | "name"> {
 	bodyMoves: number;
+	// oldBodyMoves: number;
 	completed: boolean;
 	contentChapterId: string;
 	contentChapterName: string;

@@ -31,7 +31,7 @@ router.get(
 			if (!fetchedStories) return res.send([]);
 
 			if (user && fetchedStories && fetchedStories.length) {
-				const newArray: StoryResponse[] = [];
+				const allStories: StoryResponse[] = [];
 
 				await Promise.all(
 					fetchedStories.map(async (story: any) => {
@@ -49,11 +49,11 @@ router.get(
 							}).save();
 						}
 
-						newArray.push(mapStoryResponse(story, playerData));
+						allStories.push(mapStoryResponse(story, playerData));
 					})
 				);
 
-				return res.status(STATUS_CODE.OK).send(newArray);
+				return res.status(STATUS_CODE.OK).send(allStories);
 			}
 		} catch (error) {
 			console.error(error);

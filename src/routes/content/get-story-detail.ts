@@ -1,14 +1,16 @@
-import express, { Request, Response, Router } from "express";
+import express, { Request, Response } from "express";
+
+import client from "../../util/sanity-client";
+import queries from "./queries";
+
+import { ChapterResponse } from "./types";
+import { mapChapterResponse, mapStoryResponse } from "./mappers";
 import { PlayedChapter } from "../../entity/Played_Chapter";
 import { PlayedStory } from "../../entity/Played_Story";
-import { User } from "../../entity/User";
 import { isAuth } from "../../middleware/isAuth";
 import { isCurrentUser } from "../../middleware/isCurrentUser";
-import client from "../../util/sanity-client";
 import { STATUS_CODE } from "../../util/status-codes";
-import { mapChapterResponse, mapStoryResponse } from "./mappers";
-import queries from "./queries";
-import { ChapterResponse } from "./types";
+import { User } from "../../entity/User";
 
 const router = express.Router();
 
@@ -32,6 +34,7 @@ router.get(
 			const fetchedStory = await client.fetch(
 				queries.FETCH_STORY_QUERY(storyId)
 			);
+
 			storyPlayed = await PlayedStory.findOne({
 				where: {
 					userId: user.id,

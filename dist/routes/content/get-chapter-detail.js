@@ -29,6 +29,7 @@ router.get("/api/content/get-chapter-detail/:storyId/:chapterId", [isAuth_1.isAu
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
+    console.log("User", user);
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
@@ -60,15 +61,9 @@ router.get("/api/content/get-chapter-detail/:storyId/:chapterId", [isAuth_1.isAu
                 playedStoryId: playedStory.id,
             }).save();
         }
-        const storyDetail = (0, mappers_1.mapChapterResponse)(fetchedChapter[0], chapterPlayed);
-        /**
-         * Here we must also fetch array of StoryPlayed
-         * Map an Array that returns objects containing both content and user performance
-         * Then return that array to FE
-         * Since array size is guaranteed to always be < 100,
-         * This shouldn't be too expensive
-         */
-        return res.status(status_codes_1.STATUS_CODE.OK).send(storyDetail);
+        const chapterDetail = (0, mappers_1.mapChapterResponse)(fetchedChapter[0], chapterPlayed);
+        console.log("Story Details:", chapterDetail);
+        return res.status(status_codes_1.STATUS_CODE.OK).send(chapterDetail);
     }
     catch (error) {
         console.error(error);
