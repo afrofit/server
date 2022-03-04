@@ -27,7 +27,7 @@ export class User extends BaseEntity {
 	@Column("int", { nullable: true })
 	code: number;
 
-	@Column("int", { nullable: true })
+	@Column("int", { default: 1 })
 	rankId: number;
 
 	@Column({ nullable: true })

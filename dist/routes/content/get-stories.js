@@ -38,7 +38,7 @@ router.get("/api/content/get-stories", [isAuth_1.isAuth, isCurrentUser_1.isCurre
         if (!fetchedStories)
             return res.send([]);
         if (user && fetchedStories && fetchedStories.length) {
-            const newArray = [];
+            const allStories = [];
             yield Promise.all(fetchedStories.map((story) => __awaiter(void 0, void 0, void 0, function* () {
                 let playerData;
                 playerData = yield Played_Story_1.PlayedStory.findOne({
@@ -51,9 +51,9 @@ router.get("/api/content/get-stories", [isAuth_1.isAuth, isCurrentUser_1.isCurre
                         userId: user.id,
                     }).save();
                 }
-                newArray.push((0, mappers_1.mapStoryResponse)(story, playerData));
+                allStories.push((0, mappers_1.mapStoryResponse)(story, playerData));
             })));
-            return res.status(status_codes_1.STATUS_CODE.OK).send(newArray);
+            return res.status(status_codes_1.STATUS_CODE.OK).send(allStories);
         }
     }
     catch (error) {

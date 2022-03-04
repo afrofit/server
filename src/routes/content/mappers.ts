@@ -23,6 +23,7 @@ export const mapStoryResponse = (
 		totalTargetBodyMoves: story.totalTargetBodyMoves,
 		storySuccessText: story.storySuccessText,
 		totalBodyMoves: performance.totalBodyMoves,
+		// oldTotalBodyMoves: performance.totalBodyMoves,
 		totalUserTimeSpentInMillis: performance.totalUserTimeSpentInMillis,
 		completed: performance.completed,
 		started: performance.started,
@@ -53,5 +54,6 @@ export const mapChapterResponse = (
 		started: performance.started,
 		timeSpentInMillis: performance.timeSpentInMillis,
 		bodyMoves: performance.bodyMoves,
+		// oldBodyMoves: performance.bodyMoves,
 	};
 };

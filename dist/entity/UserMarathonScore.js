@@ -27,15 +27,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserMarathonScore.prototype, "marathonId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: false }),
-    __metadata("design:type", Boolean)
-], UserMarathonScore.prototype, "isExpired", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], UserMarathonScore.prototype, "score", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
 ], UserMarathonScore.prototype, "bodyMoves", void 0);
 __decorate([

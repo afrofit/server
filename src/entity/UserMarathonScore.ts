@@ -21,13 +21,7 @@ export class UserMarathonScore extends BaseEntity {
 	@Column()
 	marathonId: string;
 
-	@Column({ default: false })
-	isExpired: boolean;
-
-	@Column()
-	score: number;
-
-	@Column()
+	@Column({ default: 0 })
 	bodyMoves: number;
 
 	@CreateDateColumn()

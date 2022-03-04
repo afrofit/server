@@ -14,6 +14,7 @@ const mapStoryResponse = (story, performance) => {
         totalTargetBodyMoves: story.totalTargetBodyMoves,
         storySuccessText: story.storySuccessText,
         totalBodyMoves: performance.totalBodyMoves,
+        // oldTotalBodyMoves: performance.totalBodyMoves,
         totalUserTimeSpentInMillis: performance.totalUserTimeSpentInMillis,
         completed: performance.completed,
         started: performance.started,
@@ -41,6 +42,7 @@ const mapChapterResponse = (chapter, performance) => {
         started: performance.started,
         timeSpentInMillis: performance.timeSpentInMillis,
         bodyMoves: performance.bodyMoves,
+        // oldBodyMoves: performance.bodyMoves,
     };
 };
 exports.mapChapterResponse = mapChapterResponse;

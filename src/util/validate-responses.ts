@@ -1,5 +1,12 @@
 import Joi from "joi";
-import { VerifyActivityData } from "./performance-types";
+import {
+	VerifyActivityData,
+	VerifyContentPlayedData,
+	VerifyDailyActivityData,
+	VerifyMarathonData,
+	VerifyPerformanceData,
+	VerifyResetContentData,
+} from "./performance-types";
 import {
 	UserDailyActivityType,
 	VerifySubscriptionData,
@@ -110,4 +117,65 @@ export const validateActivityData = (activityData: VerifyActivityData) => {
 	});
 
 	return schema.validate(activityData);
+};
+
+export const validateDailyActivityData = (
+	dailyActivityData: VerifyDailyActivityData
+) => {
+	const schema = Joi.object({
+		caloriesBurned: Joi.number().required(),
+		bodyMoves: Joi.number().required(),
+	});
+
+	return schema.validate(dailyActivityData);
+};
+
+export const validateUserPerformanceData = (
+	activityData: VerifyPerformanceData
+) => {
+	const schema = Joi.object({
+		caloriesBurned: Joi.number().required(),
+		bodyMoves: Joi.number().required(),
+		totalTimeDancedInMilliseconds: Joi.number().required(),
+	});
+
+	return schema.validate(activityData);
+};
+
+export const validateContentPlayedData = (
+	cotentPlayedData: VerifyContentPlayedData
+) => {
+	const schema = Joi.object({
+		caloriesBurned: Joi.number().required(),
+		bodyMoves: Joi.number().required(),
+		totalTimeDancedInMilliseconds: Joi.number().required(),
+		chapterStarted: Joi.boolean().required(),
+		chapterCompleted: Joi.boolean().required(),
+		storyStarted: Joi.boolean().required(),
+		storyCompleted: Joi.boolean().required(),
+		contentStoryId: Joi.string().required(),
+		contentChapterId: Joi.string().required(),
+		chapterOrderNumber: Joi.number().required(),
+	});
+
+	return schema.validate(cotentPlayedData);
+};
+
+export const validateResetContentData = (
+	resetContentData: VerifyResetContentData
+) => {
+	const schema = Joi.object({
+		contentStoryId: Joi.string().required(),
+	});
+
+	return schema.validate(resetContentData);
+};
+
+export const validateMarathonData = (marathonData: VerifyMarathonData) => {
+	const schema = Joi.object({
+		bodyMoves: Joi.number().required(),
+		marathonId: Joi.string().required(),
+	});
+
+	return schema.validate(marathonData);
 };

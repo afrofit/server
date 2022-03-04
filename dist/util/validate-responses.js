@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateActivityData = exports.validateUserActivityToday = exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
+exports.validateMarathonData = exports.validateResetContentData = exports.validateContentPlayedData = exports.validateUserPerformanceData = exports.validateDailyActivityData = exports.validateActivityData = exports.validateUserActivityToday = exports.validateSubscriptionParams = exports.validateSubscriptionData = exports.validateUsername = exports.validateEmailResetCode = exports.validateVerifyEmail = exports.validatePassword = exports.validateLogin = exports.validateCreateAccount = void 0;
 const joi_1 = __importDefault(require("joi"));
 const validateCreateAccount = (user) => {
     const schema = joi_1.default.object({
@@ -89,3 +89,51 @@ const validateActivityData = (activityData) => {
     return schema.validate(activityData);
 };
 exports.validateActivityData = validateActivityData;
+const validateDailyActivityData = (dailyActivityData) => {
+    const schema = joi_1.default.object({
+        caloriesBurned: joi_1.default.number().required(),
+        bodyMoves: joi_1.default.number().required(),
+    });
+    return schema.validate(dailyActivityData);
+};
+exports.validateDailyActivityData = validateDailyActivityData;
+const validateUserPerformanceData = (activityData) => {
+    const schema = joi_1.default.object({
+        caloriesBurned: joi_1.default.number().required(),
+        bodyMoves: joi_1.default.number().required(),
+        totalTimeDancedInMilliseconds: joi_1.default.number().required(),
+    });
+    return schema.validate(activityData);
+};
+exports.validateUserPerformanceData = validateUserPerformanceData;
+const validateContentPlayedData = (cotentPlayedData) => {
+    const schema = joi_1.default.object({
+        caloriesBurned: joi_1.default.number().required(),
+        bodyMoves: joi_1.default.number().required(),
+        totalTimeDancedInMilliseconds: joi_1.default.number().required(),
+        chapterStarted: joi_1.default.boolean().required(),
+        chapterCompleted: joi_1.default.boolean().required(),
+        storyStarted: joi_1.default.boolean().required(),
+        storyCompleted: joi_1.default.boolean().required(),
+        contentStoryId: joi_1.default.string().required(),
+        contentChapterId: joi_1.default.string().required(),
+        chapterOrderNumber: joi_1.default.number().required(),
+    });
+    return schema.validate(cotentPlayedData);
+};
+exports.validateContentPlayedData = validateContentPlayedData;
+const validateResetContentData = (resetContentData) => {
+    const schema = joi_1.default.object({
+        contentStoryId: joi_1.default.string().required(),
+    });
+    return schema.validate(resetContentData);
+};
+exports.validateResetContentData = validateResetContentData;
+const validateMarathonData = (marathonData) => {
+    const schema = joi_1.default.object({
+        bodyMoves: joi_1.default.number().required(),
+        marathonId: joi_1.default.string().required(),
+    });
+    return schema.validate(marathonData);
+};
+exports.validateMarathonData = validateMarathonData;

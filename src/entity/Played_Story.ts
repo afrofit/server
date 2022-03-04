@@ -22,6 +22,9 @@ export class PlayedStory extends BaseEntity {
 	totalBodyMoves: number;
 
 	@Column({ default: 0 })
+	oldTotalBodyMoves: number;
+
+	@Column({ default: 0 })
 	totalUserTimeSpentInMillis: number;
 
 	@Column({ default: false })
@@ -29,6 +32,9 @@ export class PlayedStory extends BaseEntity {
 
 	@Column({ default: false })
 	started: boolean;
+
+	@Column({ default: 0 })
+	lastChapterCompleted: number;
 
 	@CreateDateColumn()
 	createdAt: string;

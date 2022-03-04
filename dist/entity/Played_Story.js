@@ -32,6 +32,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
+], PlayedStory.prototype, "oldTotalBodyMoves", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
 ], PlayedStory.prototype, "totalUserTimeSpentInMillis", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
@@ -41,6 +45,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], PlayedStory.prototype, "started", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], PlayedStory.prototype, "lastChapterCompleted", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", String)

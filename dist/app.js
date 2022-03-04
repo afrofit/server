@@ -40,6 +40,8 @@ const save_user_daily_activity_1 = require("./routes/performance/save-user-daily
 const save_user_performance_data_1 = require("./routes/performance/save-user-performance-data");
 const get_user_daily_activity_1 = require("./routes/performance/get-user-daily-activity");
 const get_user_performance_data_1 = require("./routes/performance/get-user-performance-data");
+const get_chapter_detail_1 = require("./routes/content/get-chapter-detail");
+const save_user_content_played_1 = require("./routes/performance/save-user-content-played");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -71,9 +73,11 @@ app.use(get_user_performance_data_1.getUserPerformanceDataRouter);
 app.use(save_user_activity_1.saveUserActivityRouter);
 app.use(save_user_daily_activity_1.saveUserDailyActivityRouter);
 app.use(save_user_performance_data_1.saveUserPerformanceDataRouter);
+app.use(save_user_content_played_1.saveUserContentPlayedRouter);
 //Content Routes
 app.use(get_stories_1.getStoriesRouter);
 app.use(get_story_detail_1.getStoryDetailsContentRouter);
+app.use(get_chapter_detail_1.getChapterDetailsContentRouter);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });
