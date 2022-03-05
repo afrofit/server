@@ -42,6 +42,9 @@ const get_user_daily_activity_1 = require("./routes/performance/get-user-daily-a
 const get_user_performance_data_1 = require("./routes/performance/get-user-performance-data");
 const get_chapter_detail_1 = require("./routes/content/get-chapter-detail");
 const save_user_content_played_1 = require("./routes/performance/save-user-content-played");
+const reset_story_content_activity_1 = require("./routes/performance/reset-story-content-activity");
+const get_marathon_data_1 = require("./routes/marathon/get-marathon-data");
+const save_user_marathon_activity_1 = require("./routes/marathon/save-user-marathon-activity");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -78,6 +81,10 @@ app.use(save_user_content_played_1.saveUserContentPlayedRouter);
 app.use(get_stories_1.getStoriesRouter);
 app.use(get_story_detail_1.getStoryDetailsContentRouter);
 app.use(get_chapter_detail_1.getChapterDetailsContentRouter);
+app.use(reset_story_content_activity_1.resetStoryContentActivityRouter);
+//Marathon
+app.use(get_marathon_data_1.getCurrentMarathonDataRouter);
+app.use(save_user_marathon_activity_1.saveUserMarathonActivity);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });

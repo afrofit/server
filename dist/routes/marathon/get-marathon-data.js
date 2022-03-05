@@ -29,7 +29,7 @@ router.get("/api/marathon/get-current-marathon-data", (req, res) => __awaiter(vo
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
             .send("Sorry! Something went wrong.");
     let currentUserMarathonScoreIndex;
-    const LOWER_LIMIT = 30;
+    const LOWER_LIMIT = 200;
     try {
         const activeLeaderboard = yield (0, weekly_leaderboard_1.getActiveLeaderboard)();
         if (!activeLeaderboard)
