@@ -20,7 +20,7 @@ router.get(
 
 		let currentUserMarathonScoreIndex;
 
-		const LOWER_LIMIT = 30;
+		const LOWER_LIMIT = 200;
 
 		try {
 			const activeLeaderboard = await getActiveLeaderboard();
