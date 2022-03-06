@@ -1,5 +1,8 @@
 import express, { Request, Response } from "express";
-import { getActiveLeaderboard } from "../../controllers/weekly-leaderboard";
+import {
+	createWeeklyLeaderboard,
+	getActiveLeaderboard,
+} from "../../controllers/weekly-leaderboard";
 
 import { User } from "../../entity/User";
 import { UserMarathonScore } from "../../entity/UserMarathonScore";
@@ -23,7 +26,7 @@ router.get(
 				.send("Sorry! Something went wrong.");
 
 		try {
-			const activeLeaderboard = await getActiveLeaderboard();
+			const activeLeaderboard = await createWeeklyLeaderboard();
 
 			if (!activeLeaderboard)
 				return res
@@ -39,6 +42,8 @@ router.get(
 				currentUserMarathonScore = await UserMarathonScore.create({
 					userId: user.id,
 					marathonId: activeLeaderboard.id,
+					username: user.username,
+					email: user.email,
 				}).save();
 			}
 

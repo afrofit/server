@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapChapterResponse = exports.mapStoryResponse = void 0;
+exports.mapUserScoreResponse = exports.mapChapterResponse = exports.mapStoryResponse = void 0;
 const mapStoryResponse = (story, performance) => {
     return {
         contentStoryId: story._id,
@@ -46,3 +46,14 @@ const mapChapterResponse = (chapter, performance) => {
     };
 };
 exports.mapChapterResponse = mapChapterResponse;
+const mapUserScoreResponse = (user, score) => {
+    return {
+        bodyMoves: score.bodyMoves,
+        marathonId: score.marathonId,
+        email: user.email,
+        scoreId: score.id,
+        userId: user.id,
+        username: user.username,
+    };
+};
+exports.mapUserScoreResponse = mapUserScoreResponse;

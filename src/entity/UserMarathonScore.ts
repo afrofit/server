@@ -19,6 +19,12 @@ export class UserMarathonScore extends BaseEntity {
 	userId: string;
 
 	@Column()
+	username: string;
+
+	@Column()
+	email: string;
+
+	@Column()
 	marathonId: string;
 
 	@Column({ default: 0 })

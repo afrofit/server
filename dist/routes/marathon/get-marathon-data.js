@@ -25,15 +25,14 @@ exports.getCurrentMarathonDataRouter = router;
 router.get("/api/marathon/get-current-marathon-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    let user = yield User_1.User.findOne({ id: req.currentUser.id });
+    const user = yield User_1.User.findOne({ id: req.currentUser.id });
     if (!user)
         return res
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
             .send("Sorry! Something went wrong.");
-    let currentUserMarathonScoreIndex;
-    const LOWER_LIMIT = 88;
+    const LOWER_LIMIT = 195;
     try {
-        const activeLeaderboard = yield (0, weekly_leaderboard_1.getActiveLeaderboard)();
+        const activeLeaderboard = yield (0, weekly_leaderboard_1.createWeeklyLeaderboard)();
         if (!activeLeaderboard)
             return res
                 .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
@@ -57,18 +56,10 @@ router.get("/api/marathon/get-current-marathon-data", [isAuth_1.isAuth, isCurren
                 .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
                 .send("There was an error getting marathon data for user.");
         }
-        for (const [index, score] of userMarathonScoresArray.entries()) {
-            if (score.id === currentUserMarathonScore.id) {
-                currentUserMarathonScoreIndex = index;
-                break;
-            }
-        }
-        if (!currentUserMarathonScoreIndex)
-            return res
-                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-                .send("Could not find user's place on rankings table");
+        console.log("x ---- x ---- x $ X $ x ----- x ---- x");
+        console.log("Datarrr", currentUserMarathonScore, userMarathonScoresArray);
         return res.status(status_codes_1.STATUS_CODE.OK).send({
-            index: currentUserMarathonScoreIndex,
+            score: currentUserMarathonScore,
             listings: userMarathonScoresArray,
         });
     }

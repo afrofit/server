@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { getActiveLeaderboard } from "../../controllers/weekly-leaderboard";
+import { createWeeklyLeaderboard } from "../../controllers/weekly-leaderboard";
 
 import { User } from "../../entity/User";
 import { UserMarathonScore } from "../../entity/UserMarathonScore";
@@ -15,18 +15,16 @@ router.get(
 	async (req: Request, res: Response) => {
 		if (!req.currentUser)
 			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-		let user = await User.findOne({ id: req.currentUser.id });
+		const user = await User.findOne({ id: req.currentUser.id });
 		if (!user)
 			return res
 				.status(STATUS_CODE.BAD_REQUEST)
 				.send("Sorry! Something went wrong.");
 
-		let currentUserMarathonScoreIndex;
-
-		const LOWER_LIMIT = 88;
+		const LOWER_LIMIT = 195;
 
 		try {
-			const activeLeaderboard = await getActiveLeaderboard();
+			const activeLeaderboard = await createWeeklyLeaderboard();
 
 			if (!activeLeaderboard)
 				return res
@@ -56,20 +54,12 @@ router.get(
 					.send("There was an error getting marathon data for user.");
 			}
 
-			for (const [index, score] of userMarathonScoresArray.entries()) {
-				if (score.id === currentUserMarathonScore.id) {
-					currentUserMarathonScoreIndex = index;
-					break;
-				}
-			}
+			console.log("x ---- x ---- x $ X $ x ----- x ---- x");
 
-			if (!currentUserMarathonScoreIndex)
-				return res
-					.status(STATUS_CODE.INTERNAL_ERROR)
-					.send("Could not find user's place on rankings table");
+			console.log("Datarrr", currentUserMarathonScore, userMarathonScoresArray);
 
 			return res.status(STATUS_CODE.OK).send({
-				index: currentUserMarathonScoreIndex,
+				score: currentUserMarathonScore,
 				listings: userMarathonScoresArray,
 			});
 		} catch (error) {

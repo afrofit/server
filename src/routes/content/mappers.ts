@@ -1,10 +1,13 @@
 import { PlayedChapter } from "../../entity/Played_Chapter";
 import { PlayedStory } from "../../entity/Played_Story";
+import { User } from "../../entity/User";
+import { UserMarathonScore } from "../../entity/UserMarathonScore";
 import {
 	ChapterResponse,
 	ChapterType,
 	StoryResponse,
 	StoryType,
+	UserScoreResponse,
 } from "./types";
 
 export const mapStoryResponse = (
@@ -55,5 +58,19 @@ export const mapChapterResponse = (
 		timeSpentInMillis: performance.timeSpentInMillis,
 		bodyMoves: performance.bodyMoves,
 		// oldBodyMoves: performance.bodyMoves,
+	};
+};
+
+export const mapUserScoreResponse = (
+	user: User,
+	score: UserMarathonScore
+): UserScoreResponse => {
+	return {
+		bodyMoves: score.bodyMoves,
+		marathonId: score.marathonId,
+		email: user.email,
+		scoreId: score.id,
+		userId: user.id,
+		username: user.username,
 	};
 };

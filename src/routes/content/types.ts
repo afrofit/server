@@ -51,3 +51,12 @@ export interface ChapterResponse
 	started: boolean;
 	timeSpentInMillis: number;
 }
+
+export interface UserScoreResponse {
+	bodyMoves: number;
+	marathonId: string;
+	userId: string;
+	username: string;
+	email: string;
+	scoreId: string;
+}

@@ -31,7 +31,7 @@ router.get("/api/marathon/initialize-user-marathon-activity", [isAuth_1.isAuth, 
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
             .send("Sorry! Something went wrong.");
     try {
-        const activeLeaderboard = yield (0, weekly_leaderboard_1.getActiveLeaderboard)();
+        const activeLeaderboard = yield (0, weekly_leaderboard_1.createWeeklyLeaderboard)();
         if (!activeLeaderboard)
             return res
                 .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
@@ -44,6 +44,8 @@ router.get("/api/marathon/initialize-user-marathon-activity", [isAuth_1.isAuth, 
             currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.create({
                 userId: user.id,
                 marathonId: activeLeaderboard.id,
+                username: user.username,
+                email: user.email,
             }).save();
         }
         return res.status(status_codes_1.STATUS_CODE.CREATED).send(currentUserMarathonScore);
