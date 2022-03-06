@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentMarathonDataRouter = void 0;
+exports.initializeUserMarathonActivity = void 0;
 const express_1 = __importDefault(require("express"));
 const weekly_leaderboard_1 = require("../../controllers/weekly-leaderboard");
 const User_1 = require("../../entity/User");
@@ -21,8 +21,8 @@ const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const status_codes_1 = require("../../util/status-codes");
 const router = express_1.default.Router();
-exports.getCurrentMarathonDataRouter = router;
-router.get("/api/marathon/get-current-marathon-data", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.initializeUserMarathonActivity = router;
+router.get("/api/marathon/initialize-user-marathon-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
@@ -30,47 +30,23 @@ router.get("/api/marathon/get-current-marathon-data", [isAuth_1.isAuth, isCurren
         return res
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
             .send("Sorry! Something went wrong.");
-    let currentUserMarathonScoreIndex;
-    const LOWER_LIMIT = 88;
     try {
         const activeLeaderboard = yield (0, weekly_leaderboard_1.getActiveLeaderboard)();
         if (!activeLeaderboard)
             return res
                 .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
                 .send("Error fetching leaderboard");
-        const userMarathonScoresArray = yield UserMarathonScore_1.UserMarathonScore.find({
-            where: { marathonId: activeLeaderboard.id },
-            order: { bodyMoves: "DESC" },
-            skip: 0,
-            take: LOWER_LIMIT,
-        });
-        if (!userMarathonScoresArray || !userMarathonScoresArray.length)
-            return res
-                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-                .send("Sorry. Cannot find marathon data.");
         let currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.findOne({
             userId: user.id,
             marathonId: activeLeaderboard.id,
         });
         if (!currentUserMarathonScore) {
-            return res
-                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-                .send("There was an error getting marathon data for user.");
+            currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.create({
+                userId: user.id,
+                marathonId: activeLeaderboard.id,
+            }).save();
         }
-        for (const [index, score] of userMarathonScoresArray.entries()) {
-            if (score.id === currentUserMarathonScore.id) {
-                currentUserMarathonScoreIndex = index;
-                break;
-            }
-        }
-        if (!currentUserMarathonScoreIndex)
-            return res
-                .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-                .send("Could not find user's place on rankings table");
-        return res.status(status_codes_1.STATUS_CODE.OK).send({
-            index: currentUserMarathonScoreIndex,
-            listings: userMarathonScoresArray,
-        });
+        return res.status(status_codes_1.STATUS_CODE.CREATED).send(currentUserMarathonScore);
     }
     catch (error) {
         console.error(error);

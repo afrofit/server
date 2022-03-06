@@ -174,7 +174,8 @@ export const validateResetContentData = (
 export const validateMarathonData = (marathonData: VerifyMarathonData) => {
 	const schema = Joi.object({
 		bodyMoves: Joi.number().required(),
-		marathonId: Joi.string().required(),
+		marathonId: Joi.string(),
+		userMarathonScoreId: Joi.string().required(),
 	});
 
 	return schema.validate(marathonData);

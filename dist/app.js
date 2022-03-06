@@ -45,6 +45,7 @@ const save_user_content_played_1 = require("./routes/performance/save-user-conte
 const reset_story_content_activity_1 = require("./routes/performance/reset-story-content-activity");
 const get_marathon_data_1 = require("./routes/marathon/get-marathon-data");
 const save_user_marathon_activity_1 = require("./routes/marathon/save-user-marathon-activity");
+const initialize_user_marathon_data_1 = require("./routes/marathon/initialize-user-marathon-data");
 const app = (0, express_1.default)();
 exports.app = app;
 app.set("trust proxy", true);
@@ -85,6 +86,7 @@ app.use(reset_story_content_activity_1.resetStoryContentActivityRouter);
 //Marathon
 app.use(get_marathon_data_1.getCurrentMarathonDataRouter);
 app.use(save_user_marathon_activity_1.saveUserMarathonActivity);
+app.use(initialize_user_marathon_data_1.initializeUserMarathonActivity);
 app.get("/", (req, res) => {
     return res.send("Welcome to the Afrofit API.");
 });

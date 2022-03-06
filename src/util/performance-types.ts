@@ -40,5 +40,6 @@ export type VerifyResetContentData = {
 
 export type VerifyMarathonData = {
 	bodyMoves: number;
-	marathonId: string;
+	marathonId?: string;
+	userMarathonScoreId: string;
 };

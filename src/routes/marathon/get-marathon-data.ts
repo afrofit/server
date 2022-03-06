@@ -3,12 +3,15 @@ import { getActiveLeaderboard } from "../../controllers/weekly-leaderboard";
 
 import { User } from "../../entity/User";
 import { UserMarathonScore } from "../../entity/UserMarathonScore";
+import { isAuth } from "../../middleware/isAuth";
+import { isCurrentUser } from "../../middleware/isCurrentUser";
 import { STATUS_CODE } from "../../util/status-codes";
 
 const router = express.Router();
 
 router.get(
 	"/api/marathon/get-current-marathon-data",
+	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		if (!req.currentUser)
 			return res.status(STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
@@ -20,7 +23,7 @@ router.get(
 
 		let currentUserMarathonScoreIndex;
 
-		const LOWER_LIMIT = 200;
+		const LOWER_LIMIT = 88;
 
 		try {
 			const activeLeaderboard = await getActiveLeaderboard();
@@ -31,7 +34,10 @@ router.get(
 					.send("Error fetching leaderboard");
 
 			const userMarathonScoresArray = await UserMarathonScore.find({
-				marathonId: activeLeaderboard.id,
+				where: { marathonId: activeLeaderboard.id },
+				order: { bodyMoves: "DESC" },
+				skip: 0,
+				take: LOWER_LIMIT,
 			});
 
 			if (!userMarathonScoresArray || !userMarathonScoresArray.length)
@@ -45,11 +51,9 @@ router.get(
 			});
 
 			if (!currentUserMarathonScore) {
-				// Create marathon object here.
-				currentUserMarathonScore = await UserMarathonScore.create({
-					userId: user.id,
-					marathonId: activeLeaderboard.id,
-				}).save();
+				return res
+					.status(STATUS_CODE.INTERNAL_ERROR)
+					.send("There was an error getting marathon data for user.");
 			}
 
 			for (const [index, score] of userMarathonScoresArray.entries()) {
@@ -66,15 +70,8 @@ router.get(
 
 			return res.status(STATUS_CODE.OK).send({
 				index: currentUserMarathonScoreIndex,
-				listings: userMarathonScoresArray.slice(0, LOWER_LIMIT),
+				listings: userMarathonScoresArray,
 			});
-
-			/**
-			 * Fetch a marathon leaderboard that's active
-			 * Fetch an array of userMarathon Objects with the Marathon Leaderboard ID
-			 * Find the index of the usermarathon object for this user in the array, return that
-			 * Return the first 30 records (distributed on FE as ranks)
-			 * */
 		} catch (error) {
 			console.error(error);
 			return res
