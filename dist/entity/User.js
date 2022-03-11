@@ -128,6 +128,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], User.prototype, "savePassword", null);
 User = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)("users")
 ], User);
 exports.User = User;

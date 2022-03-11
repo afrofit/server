@@ -81,13 +81,13 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
             dropSchema: true,
         };
     }
-    else if (process.env.NODE_ENV !== "development") {
+    else if (process.env.NODE_ENV === "production") {
         connectionOptions = {
-            name: "default",
+            // name: "default",
             username: process.env.PG_USER,
             type: "postgres",
             // port: 5432,
-            database: "afrofit",
+            database: process.env.PG_DATABASE,
             password: process.env.PG_PASSWORD,
             entities: ["dist/entity/**/*.js"],
             migrations: ["dist/migration/**/*.js"],
@@ -101,9 +101,15 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
                 subscribersDir: "dist/subscribers",
             },
             url: process.env.DATABASE_URL,
-            dropSchema: false,
+            dropSchema: true,
+            // extra: {
+            // 	ssl: {
+            // 		rejectUnauthorized: false,
+            // 	},
+            // },
         };
     }
+    console.log("Connection Options", connectionOptions);
     yield (0, typeorm_1.createConnection)(Object.assign(Object.assign({}, connectionOptions), { type: "postgres" }));
     console.log("Connected via TypeORM to Postgres Database!");
     app_1.app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}!`));
