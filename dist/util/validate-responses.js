@@ -132,7 +132,8 @@ exports.validateResetContentData = validateResetContentData;
 const validateMarathonData = (marathonData) => {
     const schema = joi_1.default.object({
         bodyMoves: joi_1.default.number().required(),
-        marathonId: joi_1.default.string().required(),
+        marathonId: joi_1.default.string(),
+        userMarathonScoreId: joi_1.default.string().required(),
     });
     return schema.validate(marathonData);
 };

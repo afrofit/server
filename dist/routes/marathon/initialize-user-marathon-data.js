@@ -12,24 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveUserMarathonActivity = void 0;
+exports.initializeUserMarathonActivity = void 0;
 const express_1 = __importDefault(require("express"));
+const weekly_leaderboard_1 = require("../../controllers/weekly-leaderboard");
 const User_1 = require("../../entity/User");
 const UserMarathonScore_1 = require("../../entity/UserMarathonScore");
 const isAuth_1 = require("../../middleware/isAuth");
 const isCurrentUser_1 = require("../../middleware/isCurrentUser");
 const status_codes_1 = require("../../util/status-codes");
-const validate_responses_1 = require("../../util/validate-responses");
 const router = express_1.default.Router();
-exports.saveUserMarathonActivity = router;
-router.post("/api/marathon/save-user-marathon-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { marathonData } = req.body;
-    console.log("Content Played Data", req.body);
-    if (!req.currentUser)
-        return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
-    const { error } = (0, validate_responses_1.validateMarathonData)(marathonData);
-    if (error)
-        return res.status(status_codes_1.STATUS_CODE.BAD_REQUEST).send(error.details[0].message);
+exports.initializeUserMarathonActivity = router;
+router.get("/api/marathon/initialize-user-marathon-activity", [isAuth_1.isAuth, isCurrentUser_1.isCurrentUser], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.currentUser)
         return res.status(status_codes_1.STATUS_CODE.FORBIDDEN).send("Access Forbidden.");
     let user = yield User_1.User.findOne({ id: req.currentUser.id });
@@ -38,18 +31,24 @@ router.post("/api/marathon/save-user-marathon-activity", [isAuth_1.isAuth, isCur
             .status(status_codes_1.STATUS_CODE.BAD_REQUEST)
             .send("Sorry! Something went wrong.");
     try {
-        const currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.findOne({
-            userId: user.id,
-            id: marathonData.userMarathonScoreId,
-        });
-        if (!currentUserMarathonScore) {
+        const activeLeaderboard = yield (0, weekly_leaderboard_1.createWeeklyLeaderboard)();
+        if (!activeLeaderboard)
             return res
                 .status(status_codes_1.STATUS_CODE.INTERNAL_ERROR)
-                .send("There was an error retrieving user's marathon data.");
+                .send("Error fetching leaderboard");
+        let currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.findOne({
+            userId: user.id,
+            marathonId: activeLeaderboard.id,
+        });
+        if (!currentUserMarathonScore) {
+            currentUserMarathonScore = yield UserMarathonScore_1.UserMarathonScore.create({
+                userId: user.id,
+                marathonId: activeLeaderboard.id,
+                username: user.username,
+                email: user.email,
+            }).save();
         }
-        currentUserMarathonScore.bodyMoves += marathonData.bodyMoves;
-        yield currentUserMarathonScore.save();
-        return res.status(status_codes_1.STATUS_CODE.OK).send(currentUserMarathonScore);
+        return res.status(status_codes_1.STATUS_CODE.CREATED).send(currentUserMarathonScore);
     }
     catch (error) {
         console.error(error);

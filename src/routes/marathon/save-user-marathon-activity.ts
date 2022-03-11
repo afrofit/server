@@ -3,6 +3,8 @@ import { getActiveLeaderboard } from "../../controllers/weekly-leaderboard";
 
 import { User } from "../../entity/User";
 import { UserMarathonScore } from "../../entity/UserMarathonScore";
+import { isAuth } from "../../middleware/isAuth";
+import { isCurrentUser } from "../../middleware/isCurrentUser";
 import { STATUS_CODE } from "../../util/status-codes";
 import { validateMarathonData } from "../../util/validate-responses";
 
@@ -10,6 +12,7 @@ const router = express.Router();
 
 router.post(
 	"/api/marathon/save-user-marathon-activity",
+	[isAuth, isCurrentUser],
 	async (req: Request, res: Response) => {
 		const { marathonData } = req.body;
 
@@ -32,25 +35,21 @@ router.post(
 				.send("Sorry! Something went wrong.");
 
 		try {
-			const activeLeaderboard = await getActiveLeaderboard();
-
-			if (!activeLeaderboard)
-				return res
-					.status(STATUS_CODE.INTERNAL_ERROR)
-					.send("Error fetching leaderboard");
-
 			const currentUserMarathonScore = await UserMarathonScore.findOne({
 				userId: user.id,
-				marathonId: activeLeaderboard.id,
+				id: marathonData.userMarathonScoreId,
 			});
 
-			if (!currentUserMarathonScore)
+			if (!currentUserMarathonScore) {
 				return res
 					.status(STATUS_CODE.INTERNAL_ERROR)
-					.send("Sorry. Cannot find current user's marathon data.");
+					.send("There was an error retrieving user's marathon data.");
+			}
 
 			currentUserMarathonScore.bodyMoves += marathonData.bodyMoves;
 			await currentUserMarathonScore.save();
+
+			return res.status(STATUS_CODE.OK).send(currentUserMarathonScore);
 		} catch (error) {
 			console.error(error);
 			return res

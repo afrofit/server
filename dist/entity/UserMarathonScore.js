@@ -25,6 +25,14 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
+], UserMarathonScore.prototype, "username", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], UserMarathonScore.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], UserMarathonScore.prototype, "marathonId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
